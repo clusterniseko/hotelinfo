@@ -113,7 +113,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--i
 .row{border:1px solid var(--line);border-radius:8px;padding:.85rem;margin-bottom:.7rem;background:#FDFDFE}
 .row-top{display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;margin-bottom:.7rem}
 .row-title{font-size:.8rem;font-weight:600;color:var(--navy);line-height:1.4}
-.row-meta{display:block;font-size:.67rem;font-weight:400;color:var(--gray);margin-top:.15rem}
+.row-meta{display:block;font-size:.67rem;font-weight:400;color:var(--gray);margin-top:.15rem;line-height:1.45;min-height:2.9em}
 .row-meta.shared{color:var(--warn)}
 .row-tools{display:flex;gap:.3rem;flex-shrink:0}
 .icon-btn{background:#fff;border:1px solid var(--line);border-radius:5px;width:26px;height:26px;cursor:pointer;
@@ -252,7 +252,7 @@ code{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding
 .preview-frame .langbtn[aria-pressed="true"] { background: var(--navy); color: var(--white); border-color: var(--navy); }
 .preview-frame .langbtn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 .preview-frame .callout {
-  margin: 1.5rem 1.75rem 0;
+  margin: 1.5rem 1.75rem;
   border-radius: 10px;
   padding: 1.4rem 1.5rem;
   color: var(--white);
@@ -307,7 +307,9 @@ code{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding
   padding: 0.65rem 0.85rem; text-align: left;
   font-size: 0.72rem; letter-spacing: 0.07em; text-transform: uppercase;
 }
-.preview-frame table.tbl td { padding: 0.7rem 0.85rem; border-bottom: 1px solid var(--mist); vertical-align: top; line-height: 1.5; }
+.preview-frame table.tbl th:nth-child(4) { text-align: center; }
+.preview-frame table.tbl td { padding: 0.7rem 0.85rem; border-bottom: 1px solid var(--mist); vertical-align: middle; line-height: 1.5; }
+.preview-frame table.tbl td.cell-hours { text-align: center; }
 .preview-frame table.tbl tr:last-child td { border-bottom: none; }
 .preview-frame table.tbl tbody tr:nth-child(even) td { background: rgba(238,242,246,0.4); }
 .preview-frame .floor { font-weight: 600; color: var(--navy); font-size: 0.78rem; white-space: nowrap; }
@@ -315,7 +317,7 @@ code{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding
   display: inline-block; font-size: 0.68rem; padding: 0.15rem 0.55rem;
   border-radius: 999px; background: var(--mist); color: var(--gray); white-space: nowrap;
 }
-.preview-frame .sub { display: block; font-size: 0.74rem; color: var(--gray); margin-top: 0.15rem; }
+.preview-frame .sub { display: block; font-size: 0.74rem; color: var(--gray); margin-top: 0.15rem; min-height: 1.05em; }
 .preview-frame .foot-note {
   margin-top: 0.9rem; padding: 0.85rem 1rem; background: var(--mist);
   border-radius: 6px; font-size: 0.79rem; color: var(--gray); line-height: 1.7;
@@ -395,7 +397,7 @@ code{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding
 .preview-frame table.tbl td:nth-child(1) { grid-column: 1 / -1; order: 0; }
 .preview-frame table.tbl td:nth-child(3) { grid-column: 1 / -1; order: 2; margin-bottom: 0.3rem; }
 .preview-frame table.tbl td:nth-child(3):empty { display: none; }
-.preview-frame table.tbl td.cell-hours { grid-column: 1 / -1; order: 3; font-size: 0.86rem; }
+.preview-frame table.tbl td.cell-hours { grid-column: 1 / -1; order: 3; font-size: 0.86rem; text-align: left; }
 .preview-frame table.tbl td.cell-hours::before {
     content: attr(data-l);
     display: block;
@@ -703,6 +705,20 @@ var DEFAULT_CONTENT = {
       hoursJp: "17:30 -", noteJp: "ラストオーダー 21:00",
       url: "", showIn: ["hh", "nonhh", "jtb"] },
 
+    { id: "r5a", floor: "2F", floorJp: "2F",
+      nameEn: "EZO (Pub)", nameJp: "EZO（パブ）",
+      mealEn: "Lunch", mealJp: "昼食",
+      hoursEn: "Closed", noteEn: "",
+      hoursJp: "クローズ", noteJp: "",
+      url: "", showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "r5b", floor: "2F", floorJp: "2F",
+      nameEn: "EZO (Pub)", nameJp: "EZO（パブ）",
+      mealEn: "Dinner", mealJp: "夕食",
+      hoursEn: "Closed", noteEn: "",
+      hoursJp: "クローズ", noteJp: "",
+      url: "", showIn: ["hh", "nonhh", "jtb"] },
+
     { id: "r7", floor: "2F", floorJp: "2F",
       nameEn: "Sisam", nameJp: "Sisam",
       mealEn: "Dinner", mealJp: "夕食",
@@ -722,6 +738,13 @@ var DEFAULT_CONTENT = {
       mealEn: "Dinner", mealJp: "夕食",
       hoursEn: "Available exclusively by advance reservation.", noteEn: "",
       hoursJp: "事前予約制", noteJp: "※Pirka（鉄板焼き）は前日までの事前予約となっております。",
+      url: "", showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "r2c", floor: "3F", floorJp: "3F",
+      nameEn: "YOTEI (Buffet)", nameJp: "YOTEI（ビュッフェ）",
+      mealEn: "Dinner", mealJp: "夕食",
+      hoursEn: "Closed", noteEn: "",
+      hoursJp: "クローズ", noteJp: "",
       url: "", showIn: ["hh", "nonhh", "jtb"] },
 
     { id: "r10", floor: "Room Service", floorJp: "ルームサービス",
@@ -912,14 +935,103 @@ var HotelSync = (function () {
 
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
-  /* Merge saved content over the defaults so new fields never
-     break an older saved copy. */
-  function merge(base, saved) {
+  /* Arrays of objects that carry an `id` are merged item-by-item:
+     - an id present in both keeps the saved edits, filled in with any
+       fields the default has that the saved copy doesn't (so a brand
+       new field, or a brand new row added to defaults.js later, always
+       shows up even for a site that already has saved content)
+     - an id only in the saved copy (something added via the admin) is kept
+     - an id only in the defaults (a new row shipped later) is added
+     `showIn` is unioned rather than overwritten, so a page added to a
+     row in defaults.js later (e.g. Pirka becoming available on Non-HH
+     and JTB) reaches a site that already saved an older, narrower
+     showIn — unless the admin explicitly removed that page, which is
+     tracked separately in _hiddenShowIn so it isn't undone. */
+  function mergeArrayById(base, saved, deletedIds, hiddenShowIn) {
+    deletedIds = deletedIds || [];
+    hiddenShowIn = hiddenShowIn || {};
+    var baseIndex = {}, baseById = {}, savedById = {};
+    base.forEach(function (item, i) { if (item && item.id != null) { baseIndex[item.id] = i; baseById[item.id] = item; } });
+    saved.forEach(function (item) { if (item && item.id != null) savedById[item.id] = item; });
+
+    /* Rows that exist in both keep whatever relative order the saved
+       copy has them in — if the admin used the ↑ / ↓ buttons, that
+       ordering survives. Rows the admin added by hand (no match in
+       defaults.js) go to the end, also in saved order. */
+    var sharedIds = [], customOnlyIds = [];
+    saved.forEach(function (item) {
+      if (!item || item.id == null) return;
+      (baseById[item.id] ? sharedIds : customOnlyIds).push(item.id);
+    });
+
+    /* Rows only in defaults.js are new — shipped after this content
+       was last saved (or freshly un-deleted from the tombstone list:
+       never, tombstones stay excluded here). Slot each one next to
+       the neighbour it has in defaults.js, so a new dish lands
+       between the right two courses instead of at the very end. */
+    var newOnlyIds = base
+      .filter(function (item) {
+        return item && item.id != null && !savedById[item.id] && deletedIds.indexOf(item.id) === -1;
+      })
+      .map(function (item) { return item.id; });
+
+    var order = sharedIds.slice();
+    newOnlyIds.forEach(function (id) {
+      var bi = baseIndex[id], insertAt = -1, i, sib, pos;
+      for (i = bi - 1; i >= 0 && insertAt === -1; i--) {
+        sib = base[i] && base[i].id;
+        pos = sib != null ? order.indexOf(sib) : -1;
+        if (pos !== -1) insertAt = pos + 1;
+      }
+      if (insertAt === -1) {
+        for (i = bi + 1; i < base.length && insertAt === -1; i++) {
+          sib = base[i] && base[i].id;
+          pos = sib != null ? order.indexOf(sib) : -1;
+          if (pos !== -1) insertAt = pos;
+        }
+      }
+      order.splice(insertAt === -1 ? order.length : insertAt, 0, id);
+    });
+    order = order.concat(customOnlyIds);
+
+    return order.map(function (id) {
+      if (baseById[id] && savedById[id]) {
+        var merged = merge(baseById[id], savedById[id], deletedIds, hiddenShowIn);
+        var union = {};
+        (baseById[id].showIn || []).forEach(function (p) { union[p] = true; });
+        (savedById[id].showIn || []).forEach(function (p) { union[p] = true; });
+        var hidden = hiddenShowIn[id] || [];
+        merged.showIn = Object.keys(union).filter(function (p) { return hidden.indexOf(p) === -1; });
+        return merged;
+      }
+      if (baseById[id]) return clone(baseById[id]);
+      return clone(savedById[id]);
+    });
+  }
+
+  function isIdList(arr) {
+    return Array.isArray(arr) && arr.length > 0 &&
+      arr.every(function (item) { return item && typeof item === "object" && item.id != null; });
+  }
+
+  /* Merge saved content over the defaults so new fields — and new
+     rows (or new pages added to an existing row's showIn) shipped
+     later in defaults.js — never get lost behind an older saved
+     copy. Rows or pages the admin explicitly removed stay removed,
+     via the _deletedIds and _hiddenShowIn tombstones. */
+  function merge(base, saved, deletedIds, hiddenShowIn) {
+    if (deletedIds === undefined) deletedIds = (saved && saved._deletedIds) || [];
+    if (hiddenShowIn === undefined) hiddenShowIn = (saved && saved._hiddenShowIn) || {};
     if (!saved || typeof saved !== "object") return clone(base);
     var out = clone(base);
     Object.keys(saved).forEach(function (k) {
-      if (Array.isArray(saved[k])) out[k] = clone(saved[k]);
-      else if (saved[k] && typeof saved[k] === "object") out[k] = merge(out[k] || {}, saved[k]);
+      if (k === "_deletedIds")   { out._deletedIds   = clone(saved._deletedIds   || []); return; }
+      if (k === "_hiddenShowIn") { out._hiddenShowIn = clone(saved._hiddenShowIn || {}); return; }
+      if (Array.isArray(saved[k])) {
+        if (isIdList(out[k]) || isIdList(saved[k])) out[k] = mergeArrayById(out[k] || [], saved[k], deletedIds, hiddenShowIn);
+        else out[k] = clone(saved[k]);
+      }
+      else if (saved[k] && typeof saved[k] === "object") out[k] = merge(out[k] || {}, saved[k], deletedIds, hiddenShowIn);
       else out[k] = saved[k];
     });
     return out;
@@ -1073,6 +1185,28 @@ var HotelRender = (function () {
     return (list || []).filter(function (r) { return !r.showIn || r.showIn.indexOf(page) !== -1; });
   }
 
+  /* If every field of a row was cleared out in the admin, skip it
+     entirely on the public pages instead of leaving an empty gap. */
+  function isBlank(v) { return v == null || String(v).trim() === ""; }
+
+  function restaurantHasContent(r) {
+    return !(isBlank(r.nameEn) && isBlank(r.nameJp) && isBlank(r.mealEn) && isBlank(r.mealJp) &&
+             isBlank(r.hoursEn) && isBlank(r.hoursJp) && isBlank(r.noteEn) && isBlank(r.noteJp) && isBlank(r.url));
+  }
+  function facilityHasContent(f) {
+    return !(isBlank(f.nameEn) && isBlank(f.nameJp) && isBlank(f.hoursEn) && isBlank(f.hoursJp) &&
+             isBlank(f.notesEn) && isBlank(f.notesJp));
+  }
+  function serviceHasContent(s) {
+    return !(isBlank(s.labelEn) && isBlank(s.labelJp) && isBlank(s.valueEn) && isBlank(s.valueJp));
+  }
+  function linkHasContent(l) {
+    return !(isBlank(l.labelEn) && isBlank(l.labelJp) && isBlank(l.url));
+  }
+  function nonBlankLines(arr) {
+    return (arr || []).filter(function (s) { return !isBlank(s); });
+  }
+
   /* ── HERO ────────────────────────────────────── */
   function heroHTML(data, page, lang) {
     var j = isJP(lang);
@@ -1103,14 +1237,14 @@ var HotelRender = (function () {
   /* ── USEFUL LINKS ────────────────────────────── */
   function linksHTML(data, page, lang) {
     var j = isJP(lang), t = L[lang];
-    var items = filterFor(data.links, page);
+    var items = filterFor(data.links, page).filter(linkHasContent);
     if (!items.length) return "";
 
     var cards = items.map(function (it) {
       var url   = it.url;
       var label = (j ? it.labelJp : it.labelEn) || it.labelEn;
       var note  = j ? it.noteJp : it.noteEn;
-      var details = j ? it.detailsJp : it.detailsEn;
+      var details = nonBlankLines(j ? it.detailsJp : it.detailsEn);
       var detailsHTML = (details && details.length)
         ? '<ul class="linkcard-details' + jpc(lang) + '">' +
             details.map(function (d) { return '<li>' + esc(d) + '</li>'; }).join('') +
@@ -1135,7 +1269,7 @@ var HotelRender = (function () {
   /* ── RESTAURANTS ─────────────────────────────── */
   function restaurantsHTML(data, page, lang) {
     var j = isJP(lang), t = L[lang];
-    var rows = filterFor(data.restaurants, page);
+    var rows = filterFor(data.restaurants, page).filter(restaurantHasContent);
     if (!rows.length) return "";
 
     var body = rows.map(function (r) {
@@ -1151,7 +1285,7 @@ var HotelRender = (function () {
         '<td data-l="' + esc(t.restaurant) + '" class="cell-name ' + (j ? "jp" : "") + '">' + nameCell + '</td>' +
         '<td data-l="' + esc(t.meal) + '">' + (meal ? '<span class="meal' + jpc(lang) + '">' + esc(meal) + '</span>' : '') + '</td>' +
         '<td data-l="' + esc(t.hours) + '" class="cell-hours ' + (j ? "jp" : "") + '">' + esc(hrs) +
-          (note ? '<span class="sub">' + esc(note) + '</span>' : '') + '</td>' +
+          '<span class="sub">' + esc(note) + '</span></td>' +
       '</tr>';
     }).join("");
 
@@ -1174,7 +1308,7 @@ var HotelRender = (function () {
   /* ── FACILITIES ──────────────────────────────── */
   function facilitiesHTML(data, page, lang) {
     var j = isJP(lang), t = L[lang];
-    var items = filterFor(data.facilities, page);
+    var items = filterFor(data.facilities, page).filter(facilityHasContent);
     if (!items.length) return "";
 
     var cards = items.map(function (f) {
@@ -1214,7 +1348,7 @@ var HotelRender = (function () {
   /* ── OTHER SERVICES ──────────────────────────── */
   function servicesHTML(data, page, lang) {
     var j = isJP(lang), t = L[lang];
-    var rows = filterFor(data.services, page);
+    var rows = filterFor(data.services, page).filter(serviceHasContent);
     if (!rows.length) return "";
     var body = rows.map(function (s) {
       return '<div class="svc-row">' +
@@ -1233,7 +1367,7 @@ var HotelRender = (function () {
   function jtbLoungeHTML(data, page, lang) {
     if (page !== "jtb") return "";
     var jt = data.jtb || {};
-    var notes = (jt.loungeNotes || []).map(function (n) { return '<li class="jp">' + esc(n) + '</li>'; }).join("");
+    var notes = nonBlankLines(jt.loungeNotes).map(function (n) { return '<li class="jp">' + esc(n) + '</li>'; }).join("");
     return '<div class="callout callout--gold">' +
              '<h3 class="jp">' + esc(jt.loungeTitle) + '</h3>' +
              '<p class="jp">' + esc(jt.loungeLocation) + '</p>' +
@@ -1246,7 +1380,7 @@ var HotelRender = (function () {
   function premiumClubHTML(data, lang) {
     if (!isJP(lang)) return "";
     var pc = data.premiumClub; if (!pc) return "";
-    var bullets = (pc.bulletsJp || []).map(function (b) { return '<li>' + esc(b) + '</li>'; }).join("");
+    var bullets = nonBlankLines(pc.bulletsJp).map(function (b) { return '<li>' + esc(b) + '</li>'; }).join("");
     return '<div class="callout callout--teal">' +
              '<h3 class="jp">' + esc(pc.titleJp) + '</h3>' +
              '<ul class="plain jp">' + bullets + '</ul>' +
@@ -1307,13 +1441,13 @@ var HotelRender = (function () {
       '<header class="hero">' + heroHTML(data, page, lang) + '</header>' +
       langbar +
       taxHTML(data, lang) +
-      linksHTML(data, page, lang) +
       restaurantsHTML(data, page, lang) +
       jtbLoungeHTML(data, page, lang) +
       facilitiesHTML(data, page, lang) +
       wifiHTML(data, page, lang) +
       servicesHTML(data, page, lang) +
       checkoutHTML(data, page, lang) +
+      linksHTML(data, page, lang) +
       premiumClubHTML(data, lang) +
       '<footer class="foot">' + footHTML(data, page, lang, FOOT_NOTE[page]) + '</footer>' +
     '</div>';
@@ -1389,6 +1523,22 @@ var HotelRender = (function () {
     var parts = p.split("."), last = parts.pop();
     var t = parts.reduce(function (a, k) { if (a[k] == null) a[k] = {}; return a[k]; }, o);
     t[last] = v;
+  }
+
+  /* Records that `page` was deliberately removed from a shared item's
+     showIn, so the sync merge doesn't silently re-add it later when
+     defaults.js ships that page for this row again (see sync.js). */
+  function hideShowInPage(itemId, page) {
+    if (itemId == null) return;
+    if (!data._hiddenShowIn) data._hiddenShowIn = {};
+    var list = data._hiddenShowIn[itemId] || (data._hiddenShowIn[itemId] = []);
+    if (list.indexOf(page) === -1) list.push(page);
+  }
+  function unhideShowInPage(itemId, page) {
+    if (itemId == null || !data._hiddenShowIn || !data._hiddenShowIn[itemId]) return;
+    var list = data._hiddenShowIn[itemId];
+    var i = list.indexOf(page);
+    if (i !== -1) list.splice(i, 1);
   }
 
   function setSync(state, text) {
@@ -1476,13 +1626,13 @@ var HotelRender = (function () {
                  url: "", detailsEn: [], detailsJp: [], showIn: [page] };
       },
       fields: [
-        { k: "labelEn", l: "Label (EN)",   w: "g2" },
-        { k: "labelJp", l: "Label (JP)",   w: "g2" },
-        { k: "noteEn",  l: "Caption (EN)", w: "g2" },
-        { k: "noteJp",  l: "Caption (JP)", w: "g2" },
+        { k: "labelEn", l: "Label (EN)",   w: "g2", lang: "en" },
+        { k: "labelJp", l: "Label (JP)",   w: "g2", lang: "jp" },
+        { k: "noteEn",  l: "Caption (EN)", w: "g2", lang: "en" },
+        { k: "noteJp",  l: "Caption (JP)", w: "g2", lang: "jp" },
         { k: "url",     l: "URL",          w: "g1" },
-        { k: "detailsEn", l: "Bullet list shown under the card (EN) — one per line", w: "g2", area: true, isList: true },
-        { k: "detailsJp", l: "Bullet list shown under the card (JP) — one per line", w: "g2", area: true, isList: true }
+        { k: "detailsEn", l: "Bullet list shown under the card (EN) — one per line", w: "g2", area: true, isList: true, lang: "en" },
+        { k: "detailsJp", l: "Bullet list shown under the card (JP) — one per line", w: "g2", area: true, isList: true, lang: "jp" }
       ]
     },
     restaurants: {
@@ -1492,16 +1642,16 @@ var HotelRender = (function () {
                  hoursEn: "", noteEn: "", hoursJp: "", noteJp: "", url: "", showIn: [page] };
       },
       fields: [
-        { k: "floor",   l: "Venue (EN)",      w: "g3" },
-        { k: "floorJp", l: "Venue (JP)",      w: "g3" },
-        { k: "mealEn",  l: "Meal (EN)",       w: "g3" },
-        { k: "mealJp",  l: "Meal (JP)",       w: "g3" },
-        { k: "nameEn",  l: "Name (EN)",       w: "g2" },
-        { k: "nameJp",  l: "Name (JP)",       w: "g2" },
-        { k: "hoursEn", l: "Hours (EN)",      w: "g2" },
-        { k: "hoursJp", l: "Hours (JP)",      w: "g2" },
-        { k: "noteEn",  l: "Note (EN)",       w: "g2" },
-        { k: "noteJp",  l: "Note (JP)",       w: "g2" },
+        { k: "floor",   l: "Venue (EN)",      w: "g2", lang: "en" },
+        { k: "floorJp", l: "Venue (JP)",      w: "g2", lang: "jp" },
+        { k: "mealEn",  l: "Meal (EN)",       w: "g2", lang: "en" },
+        { k: "mealJp",  l: "Meal (JP)",       w: "g2", lang: "jp" },
+        { k: "nameEn",  l: "Name (EN)",       w: "g2", lang: "en" },
+        { k: "nameJp",  l: "Name (JP)",       w: "g2", lang: "jp" },
+        { k: "hoursEn", l: "Hours (EN)",      w: "g2", lang: "en" },
+        { k: "hoursJp", l: "Hours (JP)",      w: "g2", lang: "jp" },
+        { k: "noteEn",  l: "Note (EN)",       w: "g2", lang: "en" },
+        { k: "noteJp",  l: "Note (JP)",       w: "g2", lang: "jp" },
         { k: "url",     l: "Link — makes the name tappable (optional)", w: "g1" }
       ]
     },
@@ -1512,14 +1662,14 @@ var HotelRender = (function () {
                  hoursEn: "", hoursJp: "", notesEn: "", notesJp: "", showIn: [page] };
       },
       fields: [
-        { k: "floor",   l: "Floor (EN)", w: "g3" },
-        { k: "floorJp", l: "Floor (JP)", w: "g3" },
-        { k: "nameEn",  l: "Name (EN)",  w: "g3" },
-        { k: "nameJp",  l: "Name (JP)",  w: "g3" },
-        { k: "hoursEn", l: "Hours (EN)", w: "g2" },
-        { k: "hoursJp", l: "Hours (JP)", w: "g2" },
-        { k: "notesEn", l: "Notes (EN)", w: "g2", area: true },
-        { k: "notesJp", l: "Notes (JP)", w: "g2", area: true }
+        { k: "floor",   l: "Floor (EN)", w: "g3", lang: "en" },
+        { k: "floorJp", l: "Floor (JP)", w: "g3", lang: "jp" },
+        { k: "nameEn",  l: "Name (EN)",  w: "g3", lang: "en" },
+        { k: "nameJp",  l: "Name (JP)",  w: "g3", lang: "jp" },
+        { k: "hoursEn", l: "Hours (EN)", w: "g2", lang: "en" },
+        { k: "hoursJp", l: "Hours (JP)", w: "g2", lang: "jp" },
+        { k: "notesEn", l: "Notes (EN)", w: "g2", area: true, lang: "en" },
+        { k: "notesJp", l: "Notes (JP)", w: "g2", area: true, lang: "jp" }
       ]
     },
     services: {
@@ -1528,10 +1678,10 @@ var HotelRender = (function () {
         return { id: "s" + Date.now(), labelEn: "", labelJp: "", valueEn: "", valueJp: "", showIn: [page] };
       },
       fields: [
-        { k: "labelEn", l: "Label (EN)", w: "g2" },
-        { k: "labelJp", l: "Label (JP)", w: "g2" },
-        { k: "valueEn", l: "Text (EN)",  w: "g2", area: true },
-        { k: "valueJp", l: "Text (JP)",  w: "g2", area: true }
+        { k: "labelEn", l: "Label (EN)", w: "g2", lang: "en" },
+        { k: "labelJp", l: "Label (JP)", w: "g2", lang: "jp" },
+        { k: "valueEn", l: "Text (EN)",  w: "g2", area: true, lang: "en" },
+        { k: "valueJp", l: "Text (JP)",  w: "g2", area: true, lang: "jp" }
       ]
     }
   };
@@ -1602,8 +1752,14 @@ var HotelRender = (function () {
               " page? It stays on " + others.map(function (p) { return PAGE_LABEL[p]; }).join(" and ") + "."
             : "Delete \u201C" + schema.title(item) + "\u201D completely?";
           if (!confirm(msg)) return;
-          if (others.length) item.showIn = others;
-          else all.splice(all.indexOf(item), 1);
+          if (others.length) { item.showIn = others; hideShowInPage(item.id, page); }
+          else {
+            all.splice(all.indexOf(item), 1);
+            if (item.id != null) {
+              if (!Array.isArray(data._deletedIds)) data._deletedIds = [];
+              if (data._deletedIds.indexOf(item.id) === -1) data._deletedIds.push(item.id);
+            }
+          }
           touched(); renderList(collection, page, host);
         }]
       ].forEach(function (t) {
@@ -1619,7 +1775,8 @@ var HotelRender = (function () {
       row.appendChild(top);
 
       var groups = {};
-      schema.fields.forEach(function (f) { (groups[f.w] = groups[f.w] || []).push(f); });
+      var visibleFields = schema.fields.filter(function (f) { return !(page === "jtb" && f.lang === "en"); });
+      visibleFields.forEach(function (f) { (groups[f.w] = groups[f.w] || []).push(f); });
       Object.keys(groups).forEach(function (w) {
         var g = document.createElement("div");
         g.className = "grid " + w;
@@ -1655,8 +1812,8 @@ var HotelRender = (function () {
         if (p.key === page) { c.disabled = true; l.title = "Use the ✕ button to remove it from this page"; }
         c.addEventListener("change", function () {
           var i = item.showIn.indexOf(p.key);
-          if (c.checked && i === -1) item.showIn.push(p.key);
-          if (!c.checked && i !== -1) item.showIn.splice(i, 1);
+          if (c.checked && i === -1) { item.showIn.push(p.key); unhideShowInPage(item.id, p.key); }
+          if (!c.checked && i !== -1) { item.showIn.splice(i, 1); hideShowInPage(item.id, p.key); }
           refreshMeta(); touched();
         });
         l.appendChild(c); l.appendChild(document.createTextNode(p.label));
@@ -1718,17 +1875,19 @@ var HotelRender = (function () {
       '<div class="f"><label>Intro <span class="tag">JP</span></label><textarea data-bind="pages.' + page + '.introJp"></textarea></div></div>');
   }
 
-  function taxCardHTML() {
-    return card("Accommodation tax", "Shared across all three pages", '<div class="grid">' +
-      '<div class="f"><label>Niseko tax notice (EN)</label><textarea data-bind="tax.en"></textarea></div>' +
+  function taxCardHTML(page) {
+    var jtb = page === "jtb";
+    return card("Accommodation tax", "Shared across all three pages",
+      (jtb ? '<div class="grid g1">' : '<div class="grid">') +
+      (jtb ? '' : '<div class="f"><label>Niseko tax notice (EN)</label><textarea data-bind="tax.en"></textarea></div>') +
       '<div class="f"><label>Niseko tax notice (JP)</label><textarea data-bind="tax.jp"></textarea></div>' +
-      '</div><div class="grid" style="margin-top:.9rem">' +
-      '<div class="f"><label>Hokkaido tax notice (EN)</label><textarea data-bind="tax.en2"></textarea></div>' +
+      '</div><div class="grid' + (jtb ? ' g1' : '') + '" style="margin-top:.9rem">' +
+      (jtb ? '' : '<div class="f"><label>Hokkaido tax notice (EN)</label><textarea data-bind="tax.en2"></textarea></div>') +
       '<div class="f"><label>Hokkaido tax notice (JP)</label><textarea data-bind="tax.jp2"></textarea></div>' +
       '</div><div class="grid g2" style="margin-top:.9rem">' +
-      '<div class="f"><label>Link text (EN)</label><input data-bind="tax.linkEn"></div>' +
+      (jtb ? '' : '<div class="f"><label>Link text (EN)</label><input data-bind="tax.linkEn"></div>') +
       '<div class="f"><label>Link text (JP)</label><input data-bind="tax.linkJp"></div>' +
-      '<div class="f"><label>Link URL (EN)</label><input data-bind="tax.urlEn"></div>' +
+      (jtb ? '' : '<div class="f"><label>Link URL (EN)</label><input data-bind="tax.urlEn"></div>') +
       '<div class="f"><label>Link URL (JP)</label><input data-bind="tax.urlJp"></div></div>');
   }
 
@@ -1742,12 +1901,14 @@ var HotelRender = (function () {
       '<button class="add-row" type="button" id="addJtbNote" style="margin-top:.45rem">+ Add a line</button></div>');
   }
 
-  function restaurantSafetyCardHTML() {
-    return card("Dining safety notice &amp; footnote", "Shared across all three pages", '<div class="grid g2">' +
-      '<div class="f"><label>Safety banner (EN)</label><input data-bind="restaurantSafety.en"></div>' +
+  function restaurantSafetyCardHTML(page) {
+    var jtb = page === "jtb";
+    return card("Dining safety notice &amp; footnote", "Shared across all three pages",
+      (jtb ? '<div class="grid g1">' : '<div class="grid g2">') +
+      (jtb ? '' : '<div class="f"><label>Safety banner (EN)</label><input data-bind="restaurantSafety.en"></div>') +
       '<div class="f"><label>Safety banner (JP)</label><input data-bind="restaurantSafety.jp"></div></div>' +
-      '<div class="grid" style="margin-top:.9rem">' +
-      '<div class="f"><label>Footnote (EN)</label><textarea data-bind="restaurantNote.en"></textarea></div>' +
+      '<div class="grid' + (jtb ? ' g1' : '') + '" style="margin-top:.9rem">' +
+      (jtb ? '' : '<div class="f"><label>Footnote (EN)</label><textarea data-bind="restaurantNote.en"></textarea></div>') +
       '<div class="f"><label>Footnote (JP)</label><textarea data-bind="restaurantNote.jp"></textarea></div></div>');
   }
 
@@ -1773,9 +1934,11 @@ var HotelRender = (function () {
       '<div class="f"><label>Text (JP)</label><textarea data-bind="pages.' + page + '.checkoutJp"></textarea></div></div>');
   }
 
-  function windowNoticeCardHTML() {
-    return card("Window / insect notice", "Shared, shown just under check-out", '<div class="grid">' +
-      '<div class="f"><label>Text (EN)</label><textarea data-bind="windowNotice.en"></textarea></div>' +
+  function windowNoticeCardHTML(page) {
+    var jtb = page === "jtb";
+    return card("Window / insect notice", "Shared, shown just under check-out",
+      (jtb ? '<div class="grid g1">' : '<div class="grid">') +
+      (jtb ? '' : '<div class="f"><label>Text (EN)</label><textarea data-bind="windowNotice.en"></textarea></div>') +
       '<div class="f"><label>Text (JP)</label><textarea data-bind="windowNotice.jp"></textarea></div></div>');
   }
 
@@ -1787,11 +1950,13 @@ var HotelRender = (function () {
       '<button class="add-row" type="button" id="addPremiumBullet" style="margin-top:.45rem">+ Add a line</button></div>');
   }
 
-  function meetingHotelCardHTML() {
-    return card("Hotel name &amp; month", "Shared across all three pages", '<div class="grid g2">' +
-      '<div class="f"><label>Hotel name (EN)</label><input data-bind="meta.hotelName"></div>' +
+  function meetingHotelCardHTML(page) {
+    var jtb = page === "jtb";
+    return card("Hotel name &amp; month", "Shared across all three pages",
+      '<div class="grid' + (jtb ? ' g1' : ' g2') + '">' +
+      (jtb ? '' : '<div class="f"><label>Hotel name (EN)</label><input data-bind="meta.hotelName"></div>') +
       '<div class="f"><label>Hotel name (JP)</label><input data-bind="meta.hotelNameJP"></div>' +
-      '<div class="f"><label>Month (EN)</label><input data-bind="meta.month"></div>' +
+      (jtb ? '' : '<div class="f"><label>Month (EN)</label><input data-bind="meta.month"></div>') +
       '<div class="f"><label>Month (JP)</label><input data-bind="meta.monthJP"></div></div>');
   }
 
@@ -1815,18 +1980,18 @@ var HotelRender = (function () {
         '</div><p class="preview-hint">Live preview — updates as you type. Use its language buttons to check both versions.</p></div>' +
 
         '<div class="edit-col">' +
-          meetingHotelCardHTML() +
+          meetingHotelCardHTML(page) +
           headerCardHTML(page) +
-          taxCardHTML() +
+          taxCardHTML(page) +
           (isJTB ? jtbLoungeCardHTML() : '') +
-          restaurantSafetyCardHTML() +
+          restaurantSafetyCardHTML(page) +
           card("Restaurants &amp; room service", "Listed in page order", '<div id="list-restaurants-' + page + '"></div>') +
           card("Facilities", "", '<div id="list-facilities-' + page + '"></div>') +
           wifiCardHTML(page) +
           card("Other services", "", '<div id="list-services-' + page + '"></div>') +
           card("Useful links", "The QR codes from the printed letter", '<div id="list-links-' + page + '"></div>') +
           checkoutCardHTML(page) +
-          windowNoticeCardHTML() +
+          windowNoticeCardHTML(page) +
           premiumClubCardHTML() +
         '</div>' +
       '</div>';
