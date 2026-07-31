@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ヒルトンニセコビレッジ — JTBよりご予約のお客様へ</title>
+<meta name="description" content="JTB様よりご予約いただいたお客様へのご案内。レストラン営業時間、施設案内、サービスのご案内。">
+
+<!--
+  ═══════════════════════════════════════════════════════════════
+  JTB LANDING PAGE  —  Japanese only
+
+  Layout, styling and code all live in this one file.
+  There is nothing here you need to edit.
+
+  To change what guests see, open /admin in a browser.
+  ═══════════════════════════════════════════════════════════════
+-->
+
+<style>
+/* =============================================================
+   ESTILOS COMPARTIDOS — LANDING PAGES
+   ============================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=Noto+Serif+JP:wght@300;400;500;600&display=swap');
+
+:root {
+  --navy:      #16283F;
+  --navy-soft: #23405F;
+  --gold:      #B08D3C;
+  --gold-lt:   #D6B767;
+  --cream:     #FBF9F5;
+  --mist:      #EEF2F6;
+  --ink:       #26292E;
+  --gray:      #6E6A64;
+  --line:      #E0DACE;
+  --white:     #FFFFFF;
+  --teal:      #1E5F6B;
+  --moss:      #2F5D45;
+}
+
+* , *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation: none !important; transition: none !important; }
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.jp { font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', YuMincho, serif; }
+
+.wrap { max-width: 880px; margin: 0 auto; background: var(--white); box-shadow: 0 0 60px rgba(0,0,0,0.05); }
+
+/* ── HERO ───────────────────────────────────────── */
+.hero {
+  background: var(--navy);
+  color: var(--white);
+  padding: 3.5rem 1.75rem 2.75rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 25% 0%, rgba(176,141,60,0.22), transparent 55%);
+  pointer-events: none;
+}
+.hero > * { position: relative; z-index: 1; }
+
+.eyebrow {
+  display: inline-block;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold-lt);
+  border: 1px solid rgba(214,183,103,0.4);
+  padding: 0.32rem 0.95rem;
+  border-radius: 999px;
+  margin-bottom: 1.35rem;
+}
+.hotel-name {
+  font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  font-weight: 300;
+  font-size: clamp(1.9rem, 5.5vw, 3rem);
+  letter-spacing: 0.03em;
+  line-height: 1.12;
+}
+.hotel-name-jp {
+  font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+  font-weight: 300;
+  font-size: clamp(1.1rem, 3vw, 1.4rem);
+  color: var(--gold-lt);
+  margin-top: 0.45rem;
+}
+.rule { width: 44px; height: 1px; background: var(--gold); margin: 1.15rem auto; }
+.hero-copy { color: rgba(255,255,255,0.68); font-size: 0.89rem; max-width: 520px; margin: 0 auto; line-height: 1.7; }
+.hero-month {
+  display: inline-block; margin-top: 1.35rem;
+  font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-lt);
+}
+
+/* ── LANG BAR ───────────────────────────────────── */
+.langbar {
+  display: flex; justify-content: center; gap: 0.4rem;
+  padding: 0.85rem 1rem; border-bottom: 1px solid var(--line);
+  background: var(--white); position: sticky; top: 0; z-index: 20;
+}
+.langbtn {
+  background: none; border: 1px solid var(--line); border-radius: 999px;
+  padding: 0.55rem 1.35rem; min-height: 42px; font-size: 0.82rem; cursor: pointer;
+  color: var(--gray); font-family: inherit; transition: all 0.18s;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.langbtn:hover { border-color: var(--gold); color: var(--navy); }
+.langbtn[aria-pressed="true"] { background: var(--navy); color: var(--white); border-color: var(--navy); }
+.langbtn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+/* ── CALLOUTS ───────────────────────────────────── */
+.callout {
+  margin: 1.5rem 1.75rem 0;
+  border-radius: 10px;
+  padding: 1.4rem 1.5rem;
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+.callout--gold  { background: linear-gradient(135deg, var(--navy), var(--navy-soft)); }
+.callout--teal  { background: linear-gradient(135deg, var(--teal), #2A7C8A); }
+.callout--moss  { background: linear-gradient(135deg, var(--moss), #3F7A5C); }
+.callout h3 {
+  font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  font-size: 1.25rem; font-weight: 500; color: var(--gold-lt); margin-bottom: 0.5rem;
+}
+.callout h3.jp { font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif; font-size: 1.05rem; }
+.callout p { font-size: 0.85rem; color: rgba(255,255,255,0.78); line-height: 1.7; }
+.callout .big {
+  font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif; font-size: 1.75rem;
+  color: var(--gold-lt); margin: 0.35rem 0 0.55rem; letter-spacing: 0.02em;
+}
+.callout ul { list-style: none; margin-top: 0.6rem; }
+.callout li {
+  font-size: 0.8rem; color: rgba(255,255,255,0.75); line-height: 1.75;
+  padding-left: 1.1rem; position: relative;
+}
+.callout li::before { content: '★'; position: absolute; left: 0; color: var(--gold-lt); font-size: 0.7rem; top: 0.35rem; }
+
+/* ── TAX NOTICE ─────────────────────────────────── */
+.notice {
+  margin: 1.5rem 1.75rem 0;
+  border-left: 3px solid var(--gold);
+  background: linear-gradient(90deg, rgba(176,141,60,0.09), rgba(176,141,60,0.02));
+  padding: 0.95rem 1.25rem;
+  border-radius: 0 6px 6px 0;
+}
+.notice p { font-size: 0.82rem; color: var(--gray); line-height: 1.65; }
+
+/* ── SECTIONS ───────────────────────────────────── */
+.section { padding: 2.25rem 1.75rem; border-top: 1px solid var(--line); }
+.section:first-of-type { border-top: none; }
+.section-head { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.4rem; }
+.section-head .mark {
+  width: 34px; height: 34px; flex-shrink: 0; border-radius: 8px;
+  background: linear-gradient(135deg, var(--navy), var(--navy-soft));
+  color: var(--gold-lt); display: flex; align-items: center; justify-content: center;
+  font-size: 0.95rem;
+}
+.section-head h2 {
+  font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif; font-weight: 500;
+  font-size: 1.45rem; color: var(--navy); letter-spacing: 0.01em;
+}
+.section-head h2.jp { font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif; font-size: 1.15rem; font-weight: 500; }
+
+/* ── TABLE ──────────────────────────────────────── */
+.tbl-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table.tbl { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 520px; }
+table.tbl th {
+  background: var(--navy); color: var(--white); font-weight: 400;
+  padding: 0.65rem 0.85rem; text-align: left;
+  font-size: 0.72rem; letter-spacing: 0.07em; text-transform: uppercase;
+}
+table.tbl td { padding: 0.7rem 0.85rem; border-bottom: 1px solid var(--mist); vertical-align: top; line-height: 1.5; }
+table.tbl tr:last-child td { border-bottom: none; }
+table.tbl tbody tr:nth-child(even) td { background: rgba(238,242,246,0.4); }
+.floor { font-weight: 600; color: var(--navy); font-size: 0.78rem; white-space: nowrap; }
+.meal {
+  display: inline-block; font-size: 0.68rem; padding: 0.15rem 0.55rem;
+  border-radius: 999px; background: var(--mist); color: var(--gray); white-space: nowrap;
+}
+.sub { display: block; font-size: 0.74rem; color: var(--gray); margin-top: 0.15rem; }
+.foot-note {
+  margin-top: 0.9rem; padding: 0.85rem 1rem; background: var(--mist);
+  border-radius: 6px; font-size: 0.79rem; color: var(--gray); line-height: 1.7;
+}
+
+/* ── FACILITY CARDS ─────────────────────────────── */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 0.9rem; }
+.card { border: 1px solid var(--line); border-radius: 8px; padding: 1.05rem; background: var(--white); }
+.card .fl {
+  font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gold); font-weight: 600; margin-bottom: 0.35rem;
+}
+.card h4 { font-size: 0.92rem; color: var(--navy); font-weight: 600; margin-bottom: 0.35rem; }
+.card h4.jp { font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif; font-weight: 500; }
+.card .hrs { font-size: 0.82rem; color: var(--ink); margin-bottom: 0.35rem; }
+.card .nt { font-size: 0.75rem; color: var(--gray); line-height: 1.6; }
+
+/* ── SERVICE ROWS ───────────────────────────────── */
+.svc { display: flex; flex-direction: column; gap: 0.75rem; }
+.svc-row {
+  display: grid; grid-template-columns: 150px 1fr; gap: 1rem;
+  padding: 0.9rem 1rem; background: var(--mist); border-radius: 8px; align-items: start;
+}
+.svc-row dt {
+  font-size: 0.82rem; font-weight: 600; color: var(--navy);
+  letter-spacing: 0.01em;
+}
+.svc-row dt.jp { font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif; text-transform: none; letter-spacing: 0.02em; font-size: 0.85rem; }
+.svc-row dd { font-size: 0.85rem; color: var(--ink); line-height: 1.7; }
+.code {
+  display: inline-block; background: var(--navy); color: var(--gold-lt);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  padding: 0.1rem 0.5rem; border-radius: 4px; font-size: 0.85rem; letter-spacing: 0.06em;
+}
+
+/* ── CHECKOUT ───────────────────────────────────── */
+.checkout { background: var(--mist); border-radius: 8px; padding: 1.35rem 1.5rem; }
+.checkout .time {
+  font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif; font-size: 2.1rem;
+  color: var(--navy); font-weight: 300; line-height: 1; margin-bottom: 0.6rem;
+}
+.checkout p { font-size: 0.83rem; color: var(--gray); line-height: 1.8; }
+
+/* ── FOOTER ─────────────────────────────────────── */
+.foot {
+  background: var(--navy); color: rgba(255,255,255,0.45);
+  text-align: center; padding: 1.75rem 1.5rem;
+  font-size: 0.74rem; letter-spacing: 0.06em;
+}
+.foot strong { color: var(--gold-lt); font-weight: 500; }
+.foot .stamp { display: block; margin-top: 0.5rem; font-size: 0.68rem; opacity: 0.6; }
+
+/* ── UTIL ───────────────────────────────────────── */
+[hidden] { display: none !important; }
+.loading { padding: 4rem 2rem; text-align: center; color: var(--gray); font-size: 0.85rem; }
+
+@media (max-width: 600px) {
+  .hero { padding: 2.75rem 1.25rem 2.25rem; }
+  .section { padding: 1.85rem 1.25rem; }
+  .callout, .notice { margin-left: 1.25rem; margin-right: 1.25rem; }
+  .cards { grid-template-columns: 1fr; }
+  .svc-row { grid-template-columns: 1fr; gap: 0.3rem; }
+
+  /* La tabla se apila en tarjetas — sin scroll lateral */
+  .tbl-scroll { overflow-x: visible; }
+  table.tbl { min-width: 0; display: block; }
+  table.tbl thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  table.tbl tbody { display: block; }
+  table.tbl tr {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.15rem 0.6rem;
+    align-items: baseline;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.75rem 0.9rem;
+    margin-bottom: 0.6rem;
+    background: var(--white);
+  }
+  table.tbl tbody tr:nth-child(even) td { background: transparent; }
+  table.tbl td { display: block; border: none; padding: 0; }
+
+  /* Nombre del restaurante como título, ocupando toda la fila */
+  table.tbl td.cell-name {
+    grid-column: 1 / -1;
+    order: 1;
+    font-weight: 600;
+    color: var(--navy);
+    font-size: 0.92rem;
+    margin-bottom: 0.35rem;
+  }
+  /* Piso y comida en línea, como etiquetas */
+  table.tbl td:nth-child(1) { grid-column: 1 / -1; order: 0; }
+  table.tbl td:nth-child(3) { grid-column: 1 / -1; order: 2; margin-bottom: 0.3rem; }
+  table.tbl td:nth-child(3):empty { display: none; }
+  table.tbl td.cell-hours { grid-column: 1 / -1; order: 3; font-size: 0.86rem; }
+
+  table.tbl td.cell-hours::before {
+    content: attr(data-l);
+    display: block;
+    font-size: 0.64rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 0.15rem;
+  }
+  .floor { font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); }
+}
+
+/* ── SECTION INTRO ──────────────────────────────── */
+.section-intro { font-size: .84rem; color: var(--gray); line-height: 1.7; margin: -0.6rem 0 1.1rem; }
+
+/* ── NOTICE LINK ────────────────────────────────── */
+.notice-link {
+  display: inline-flex; align-items: center; gap: .3rem;
+  min-height: 40px; margin-top: .35rem; font-size: .82rem; font-weight: 600;
+  color: var(--navy); text-decoration: none; border-bottom: 1px solid var(--gold);
+  padding-bottom: 1px;
+}
+.notice-link:hover { color: var(--gold); }
+
+/* ── USEFUL LINK CARDS ──────────────────────────── */
+.linkgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: .7rem; }
+.linkcard {
+  position: relative; display: flex; flex-direction: column; gap: .18rem;
+  border: 1px solid var(--line); border-radius: 8px; padding: .9rem 2.1rem .9rem 1rem;
+  background: var(--white); text-decoration: none; color: var(--navy);
+  transition: border-color .16s, background .16s, transform .16s;
+}
+.linkcard:hover { border-color: var(--gold); background: #FCFAF5; }
+.linkcard:active { transform: scale(.99); }
+.linkcard:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.linkcard-label { font-size: .88rem; font-weight: 600; line-height: 1.35; }
+.linkcard-note  { font-size: .74rem; color: var(--gray); line-height: 1.4; }
+.linkcard-go {
+  position: absolute; right: .85rem; top: 50%; transform: translateY(-50%);
+  color: var(--gold); font-size: .85rem;
+}
+
+/* Links inside the dining table */
+table.tbl a {
+  display: inline-flex; align-items: center; gap: .25rem;
+  min-height: 40px; padding: .25rem 0;
+  color: var(--navy); text-decoration: none; font-weight: 600;
+}
+table.tbl a span { color: var(--gold); }
+table.tbl a:hover { color: var(--gold); }
+table.tbl a:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 3px; }
+
+@media (max-width: 600px) {
+  .linkgrid { grid-template-columns: 1fr; }
+}
+
+/* ── SAFETY BANNER (above dining table) ─────────── */
+.safety-banner {
+  background: #FFF6D6; border: 1px solid #EBD98A; color: #6B5A12;
+  font-size: .82rem; font-weight: 600; padding: .6rem .9rem;
+  border-radius: 6px; margin-bottom: 1rem; line-height: 1.5;
+}
+
+/* ── WI-FI BOX ──────────────────────────────────── */
+.wifi-box {
+  background: var(--mist); border-radius: 8px; padding: 1rem 1.15rem;
+}
+.wifi-box p { font-size: .85rem; color: var(--ink); line-height: 1.75; }
+
+/* ── WINDOW / INSECT NOTICE ─────────────────────── */
+.window-notice {
+  margin-top: 1rem; font-size: .78rem; color: #A33; line-height: 1.6;
+  border-left: 3px solid #E8A0A0; padding-left: .7rem;
+}
+
+/* ── LINK CARD DETAILS (QR concierge sub-bullets) ── */
+.linkcard-details { list-style: none; margin-top: .3rem; padding: 0; }
+.linkcard-details li {
+  font-size: .72rem; color: var(--gray); line-height: 1.55; padding-left: .8rem; position: relative;
+}
+.linkcard-details li::before { content: '·'; position: absolute; left: 0; color: var(--gold); }
+
+/* ── PLAIN LIST (callout bullets without the ★ prefix) ── */
+ul.plain { list-style: none; }
+ul.plain li {
+  font-size: .8rem; color: rgba(255,255,255,.8); line-height: 1.75; padding-left: 0;
+}
+ul.plain li::before { content: none; }
+
+/* ── LIVE UPDATE TOAST ──────────────────────────── */
+.updated-flash {
+  position: fixed;
+  bottom: 1.1rem;
+  left: 50%;
+  transform: translate(-50%, 160%);
+  background: var(--navy);
+  color: var(--gold-lt);
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  box-shadow: 0 8px 30px rgba(0,0,0,.22);
+  z-index: 300;
+  transition: transform .35s ease;
+  pointer-events: none;
+}
+.updated-flash.show { transform: translate(-50%, 0); }
+
+/* ── LINK CARDS (printed as QR codes originally) ── */
+.section-intro { font-size: 0.83rem; color: var(--gray); margin-bottom: 1rem; line-height: 1.6; }
+
+.linkgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 0.7rem; }
+
+.linkcard {
+  display: block;
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.9rem 2.1rem 0.9rem 1rem;
+  background: var(--white);
+  text-decoration: none;
+  transition: border-color .16s, background .16s, transform .16s;
+}
+.linkcard:hover { border-color: var(--gold); background: #FDFBF6; }
+.linkcard:active { transform: translateY(1px); }
+.linkcard:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.linkcard-name { display: block; font-size: 0.88rem; font-weight: 600; color: var(--navy); line-height: 1.35; }
+.linkcard-desc { display: block; font-size: 0.74rem; color: var(--gray); margin-top: 0.2rem; line-height: 1.45; }
+.linkcard-go {
+  position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%);
+  color: var(--gold); font-size: 0.9rem;
+}
+
+/* link inside the tax notice */
+.notice-link {
+  display: inline-block; margin-top: 0.5rem;
+  font-size: 0.79rem; color: var(--navy); font-weight: 600;
+  text-decoration: none; border-bottom: 1px solid var(--gold); padding-bottom: 1px;
+}
+.notice-link:hover { color: var(--gold); }
+
+/* link inside a table row (room service) */
+.row-link { color: var(--navy); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--gold); }
+.row-link:hover { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<main id="app"><div class="loading">読み込み中…</div></main>
+
+<script>
+/* =============================================================
+   DEFAULT CONTENT
+   Transcribed from the five August 2026 guest letters
+   (HH_ENG, HH_JP, JTB, Non_HH_ENG, Non_HH_JP), including every
+   QR code destination found in those PDFs.
+
+   You do not need to edit this file — use the admin instead.
+   This is only the fallback shown before anything has been saved.
+   ============================================================= */
+
+var DEFAULT_CONTENT = {
+  meta: {
+    hotelName:    "Hilton Niseko Village",
+    hotelNameJP:  "ヒルトンニセコビレッジ",
+    month:        "August 2026",
+    monthJP:      "8月 2026",
+    checkoutTime: "11:00",
+    updatedAt:    null
+  },
+
+  /* Header + checkout wording, one block per landing page.
+     Checkout copy genuinely differs by page in the source PDFs. */
+  pages: {
+    hh: {
+      badgeEn: "Hotel Information",
+      badgeJp: "ご宿泊のお客様へ",
+      introEn: "Thank you for choosing the Hilton Niseko Village as your holiday destination! In this letter, you will find an overview of our hotel facilities.",
+      introJp: "この度は、ヒルトンニセコビレッジにご宿泊いただき誠にありがとうございます。より快適にお過ごし頂くためのご案内をご参照ください。",
+      checkoutEn: "Check out is 11:00 a.m. We recommend settling charges beforehand. (Please let us know in advance if you would like an express check-out.)",
+      checkoutJp: "11:00までにご出発のお手続きをお願いします。チェックアウトの時間帯は混雑が予想されますので、前日のご精算をおすすめしております。エクスプレスチェックアウトご希望のお客様は、フロントにご連絡下さい。"
+    },
+    nonhh: {
+      badgeEn: "Hotel Information",
+      badgeJp: "ご宿泊のお客様へ",
+      introEn: "Thank you for choosing the Hilton Niseko Village as your holiday destination! In this letter, you will find an overview of our hotel facilities.",
+      introJp: "この度は、ヒルトンニセコビレッジにご宿泊いただき誠にありがとうございます。より快適にお過ごし頂くためのご案内をご参照ください。",
+      checkoutEn: "Check out is 11:00 a.m. We recommend settling charges beforehand. (Please let us know in advance if you would like an express check-out.)",
+      checkoutJp: "11:00までにご出発のお手続きをお願いいします。チェックアウトの時間帯は混雑が予想されますので、前日のご精算をおすすめしております。エクスプレスチェックアウトご希望のお客様は、フロントにご連絡下さい。チェックアウト日中のお荷物のお預かり、温泉のご利用を承っております、お声がけください。ご不明な点やご質問などございましたら、どうぞお気軽にスタッフまでお問い合わせ下さい。ヒルトンニセコビレッジでのご滞在を、ごゆっくりお楽しみ下さい。"
+    },
+    jtb: {
+      badgeEn: "JTB Guest",
+      badgeJp: "JTBよりご予約のお客様へ",
+      introEn: "",
+      introJp: "この度は、ヒルトンニセコビレッジにご宿泊いただき誠にありがとうございます。私共の大切なパートナーであるJTB様よりご予約いただいた、お客様により快適にお過ごし頂くためのご案内をご参照ください。",
+      checkoutEn: "",
+      checkoutJp: "11:00までにご出発のお手続きをお願いします。チェックアウトの時間帯は混雑が予想されますので、前日のご精算をおすすめしております。エクスプレスチェックアウトご希望のお客様は、フロントにご連絡下さい。チェックアウト日中のお荷物のお預かり、温泉のご利用を承っております、お声がけください。ご不明な点やご質問などございましたら、どうぞお気軽にスタッフまでお問い合わせ下さい。ヒルトンニセコビレッジでのご滞在を、ごゆっくりお楽しみ下さい。"
+    }
+  },
+
+  /* Accommodation tax — two separate notices now (Niseko + Hokkaido).
+     The QR in the letter points at the Niseko PDF only. */
+  tax: {
+    en:     "Niseko accommodation tax will apply from NOV 2024. For full details, please kindly refer to the Niseko town office website using this QR code.",
+    jp:     "2024年11月よりニセコ町宿泊税が導入されます。詳しくはニセコ町ホームページをご参照くださいませ。",
+    en2:    "Hokkaido accommodation tax will apply from APR 2026.",
+    jp2:    "2026年4月より北海道宿泊税が導入されます。",
+    linkEn: "Niseko town office — accommodation tax",
+    linkJp: "ニセコ町ホームページ（宿泊税）",
+    urlEn:  "https://www.town.niseko.lg.jp/resources/output/contents/file/release/10654/49470/gaiyou-eng-syukuhakuzei.pdf",
+    urlJp:  "https://www.town.niseko.lg.jp/resources/output/contents/file/release/10654/49470/gaiyou-syukuhakuzei.pdf"
+  },
+
+  /* Short highlighted safety line shown just above the dining table */
+  restaurantSafety: {
+    en: "For your safety, please do not wear yukata or slippers in the hotel restaurants.",
+    jp: "浴衣、スリッパでのレストラン利用はご遠慮ください。"
+  },
+
+  restaurantNote: {
+    en: "We highly recommend making dinner reservations in advance. Please dial #9 from your room.\nPlease refrain from wearing yukata/bathrobes and slippers to the restaurants.",
+    jp: "・夕食は事前のご予約をおすすめしております。内線9番（フロント）までお問い合わせくださいませ。"
+  },
+
+  /* showIn controls which landing pages each row appears on.
+     Note: EZO (Pub) no longer appears in any of the five letters. */
+  restaurants: [
+    { id: "r1", floor: "1F", floorJp: "1F",
+      nameEn: "Flame (Lounge)", nameJp: "Flame（ラウンジ）",
+      mealEn: "", mealJp: "",
+      hoursEn: "11:00 am -", noteEn: "L.O. 8:30 pm",
+      hoursJp: "11:00 -", noteJp: "ラストオーダー 20:30",
+      url: "", showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "r2", floor: "2F", floorJp: "2F",
+      nameEn: "MELT (Buffet)", nameJp: "Melt（ビュッフェ）",
+      mealEn: "Breakfast", mealJp: "朝食",
+      hoursEn: "6:00 am -", noteEn: "L.O. 9:30 am",
+      hoursJp: "6:00 -", noteJp: "ラストオーダー 9:30",
+      url: "", showIn: ["hh", "jtb"] },
+
+    { id: "r2b", floor: "3F", floorJp: "3F",
+      nameEn: "YOTEI (Buffet)", nameJp: "YOTEI（ビュッフェ）",
+      mealEn: "Breakfast", mealJp: "朝食",
+      hoursEn: "6:00 am -", noteEn: "L.O. 9:30 am",
+      hoursJp: "06:00 -", noteJp: "ラストオーダー 9:30",
+      url: "", showIn: ["nonhh"] },
+
+    { id: "r3", floor: "2F", floorJp: "2F",
+      nameEn: "Melt", nameJp: "Melt",
+      mealEn: "Lunch", mealJp: "昼食",
+      hoursEn: "11:30 am -", noteEn: "L.O. 2:30 pm",
+      hoursJp: "11:30 -", noteJp: "ラストオーダー 14:30",
+      url: "", showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "r4", floor: "2F", floorJp: "2F",
+      nameEn: "Melt", nameJp: "Melt",
+      mealEn: "Dinner", mealJp: "夕食",
+      hoursEn: "5:30 pm -", noteEn: "L.O. 9:00 pm",
+      hoursJp: "17:30 -", noteJp: "ラストオーダー 21:00",
+      url: "", showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "r7", floor: "2F", floorJp: "2F",
+      nameEn: "Sisam", nameJp: "Sisam",
+      mealEn: "Dinner", mealJp: "夕食",
+      hoursEn: "5:30 pm -", noteEn: "L.O. 9:00 pm",
+      hoursJp: "17:30 -", noteJp: "ラストオーダー 21:00",
+      url: "", showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "r8", floor: "2F", floorJp: "2F",
+      nameEn: "Rera (Sushi)", nameJp: "Rera（寿司）",
+      mealEn: "Dinner", mealJp: "夕食",
+      hoursEn: "5:30 pm -", noteEn: "L.O. 9:00 pm",
+      hoursJp: "17:30 -", noteJp: "ラストオーダー 21:00",
+      url: "", showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "r6", floor: "2F", floorJp: "2F",
+      nameEn: "Pirka (Teppanyaki)", nameJp: "Pirka（鉄板焼き）",
+      mealEn: "Dinner", mealJp: "夕食",
+      hoursEn: "Available exclusively by advance reservation.", noteEn: "",
+      hoursJp: "事前予約制", noteJp: "※Pirka（鉄板焼き）は前日までの事前予約となっております。",
+      url: "", showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "r10", floor: "Room Service", floorJp: "ルームサービス",
+      nameEn: "Room Service", nameJp: "ルームサービス",
+      mealEn: "", mealJp: "",
+      hoursEn: "Please place your order using this QR code.", noteEn: "L.O. 10 PM",
+      hoursJp: "QRコードよりご注文ください。", noteJp: "ラストオーダー 10PM",
+      url: "https://hiltonnisekovillage.wi-q.com/",
+      showIn: ["hh", "nonhh", "jtb"] }
+  ],
+
+  facilities: [
+    { id: "f1", floor: "1F", floorJp: "1F",
+      nameEn: "Hot Springs (Onsen)", nameJp: "大浴場・露天風呂",
+      hoursEn: "5:30 am ~ 11:00 pm (Last Entry 10:45 pm)",
+      hoursJp: "【営業時間】05:30～23:00（最終入場22:45）",
+      notesEn: "To avoid accidental loss or misplaced shoes in the hot springs change rooms, we encourage you to use the brown slippers provided in your room when visiting the facility.",
+      notesJp: "・サンダル、靴の履き間違えが多数発生しております。\n・お部屋備え付けのスリッパをご利用ください。\n・浴衣、スリッパでお部屋よりご利用可能です。\n・アクセスにはルームキーが必要です。",
+      showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "f2", floor: "1F", floorJp: "1F",
+      nameEn: "Gym", nameJp: "フィットネスジム",
+      hoursEn: "Open 24 hours",
+      hoursJp: "24時間ご利用いただけます",
+      notesEn: "Available for staying guests 16 years and above & Hilton NV fitness club members only.",
+      notesJp: "・アクセスにはルームキーが必要です。\n・シューズ等の貸し出しはございません、ご自身の物をご利用ください。",
+      showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "f3", floor: "1F", floorJp: "1F",
+      nameEn: "Hilton Shop", nameJp: "売店",
+      hoursEn: "08:00 am - 10:00 pm",
+      hoursJp: "08:00 - 22:00",
+      notesEn: "", notesJp: "",
+      showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "f4", floor: "1F", floorJp: "1F",
+      nameEn: "Aranya Spa", nameJp: "ARANYA SPA",
+      hoursEn: "Opening hours vary depending on the day of the week.",
+      hoursJp: "営業日によって営業時間が異なります。",
+      notesEn: "Please check availability via the QR code at SPA entrance.",
+      notesJp: "詳細につきましてはSPAまでお問い合わせくださいませ。",
+      showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "f5", floor: "10 & 15F", floorJp: "10・15F",
+      nameEn: "Ice Machine", nameJp: "製氷機",
+      hoursEn: "",
+      hoursJp: "24時間ご利用いただけます",
+      notesEn: "Ice dispensers are located on the 10th & 15th floor elevator halls.",
+      notesJp: "・各部屋備え付けのアイスペールをご持参ください。",
+      showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "f6", floor: "1F (outside)", floorJp: "1F屋外",
+      nameEn: "Smoking Area", nameJp: "喫煙所",
+      hoursEn: "Open 24 hours",
+      hoursJp: "24時間ご利用いただけます",
+      notesEn: "Located outside the main entrance – right side.",
+      notesJp: "1階正面玄関自動扉を出て右手屋外にございます。",
+      showIn: ["hh", "nonhh", "jtb"] }
+  ],
+
+  /* Wi-Fi is written out per page, since the model genuinely differs:
+     HH and JTB get a simple network + passcode, Non-HH is billed
+     per day unless the guest joins Hilton Honors. */
+  wifi: {
+    labelEn: "High Speed Internet (Wi-Fi)",
+    labelJp: "インターネット（Wi-Fi）",
+    hh: {
+      valueEn: "Complimentary Wi-Fi is available in all public areas using 'hhonors-public'. In-room Wi-Fi is available by logging onto network \"hhonors\" and using passcode \"hhaug\" (you DO NOT need to input your room number or name).",
+      valueJp: "1階～3階 無料「hhonors-public」\n客室「hhonors」ログイン画面の部屋番号・名前には入力不要です。アクセスコードに「hhaug」にてログインして下さい。"
+    },
+    nonhh: {
+      valueEn: "Complimentary Wi-Fi is available in the public areas using 'hhonors-public'. In-room Wi-Fi is available at a charge of 550 yen per day for standard Wi-Fi usage (3MB). Become a Hilton Honors member today to enjoy instant complimentary in-room Wi-Fi.",
+      valueJp: "客室階 有料（24時間550円）1階～3階 無料「hhonors-public」\n※ヒルトンオーナーズにご登録頂くと無料でご利用できます。下記QRコードよりご登録ください。"
+    },
+    jtb: {
+      valueEn: "",
+      valueJp: "1階～3階 無料「hhonors-public」\n客室「hhonors」ログイン画面の部屋番号・名前には入力不要です。アクセスコードに「2026aug」にてログインして下さい。"
+    }
+  },
+
+  services: [
+    { id: "s1",
+      labelEn: "Daily Room Cleaning", labelJp: "清掃",
+      valueEn: "Housekeeping will perform daily room cleaning from 10:00 a.m. Please inform Front Desk or switch on the 'Do not disturb' sign if you do not require cleaning of your room.",
+      valueJp: "不要な場合は、内線9番（フロントデスク）にお申し付けください。",
+      showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "s2",
+      labelEn: "In-Room Safe", labelJp: "貴重品",
+      valueEn: "Please make use of the in-room safe for storing valuable items. Place your items in the safe, close the door, enter a 4-digit PIN code and press the 'lock' button.",
+      valueJp: "貴重品はお部屋の金庫にて保管いただきますようお願いいたします。",
+      showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "s3",
+      labelEn: "NV Shuttle Bus", labelJp: "シャトルバス",
+      valueEn: "Please show your room key to the driver when boarding the shuttle.",
+      valueJp: "ホテル、ヒラフ、俱知安間の無料シャトルバスがございます。コンシェルジュデスクにて時刻表を配布しております。\n*ルームキーを乗車の際にドライバーさんにご提示ください。",
+      showIn: ["hh", "nonhh", "jtb"] }
+  ],
+
+  /* The QR codes on page 2 of every letter, now as tappable links.
+     Room Service is handled inline in the dining table instead. */
+  links: [
+    { id: "l1",
+      labelEn: "In-room Settings", labelJp: "室内空調設定",
+      noteEn: "Electric switch operation method", noteJp: "電気スイッチ操作方法",
+      url: "https://nisekocluster.com/guides/",
+      showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "l2",
+      labelEn: "Luggage Assistance", labelJp: "お荷物のお手伝い",
+      noteEn: "", noteJp: "",
+      url: "https://pickup.nisekocluster.com/",
+      showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "l3",
+      labelEn: "QR Concierge", labelJp: "QRコンシェルジュ",
+      noteEn: "Location & access, shuttle timetable, restaurant menus and activities",
+      noteJp: "交通案内・シャトルバス時刻表・レストランメニュー・アクティビティ情報",
+      url: "https://nisekovillage.hiltonjapan.co.jp/activity/lp/QRconcierge",
+      detailsEn: [
+        "Location & Access to the hotel",
+        "Niseko Village Shuttle Bus Timetable",
+        "Hotel Restaurant Information",
+        "Activities including: Niseko Village Activities, Lion Adventure Activities, Niseko Area Tourist Information"
+      ],
+      detailsJp: [
+        "交通案内",
+        "倶知安駅間無料シャトルバス時刻表",
+        "館内レストランメニュー",
+        "アクティビティ情報（ニセコビレッジ運営アクティビティ、ライオンアドベンチャー運営アクティビティ、ニセコ周辺観光案内）"
+      ],
+      showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "l4",
+      labelEn: "Join Hilton Honors", labelJp: "ヒルトンオーナーズ（無料）",
+      noteEn: "Membership is free — instant benefits", noteJp: "会員登録は無料です",
+      url: "https://secure3.hilton.com/en/hh/customer/join/joinHHonors.htm?OCODE=I296W",
+      showIn: ["nonhh", "jtb"] }
+  ],
+
+  /* JTB page only */
+  jtb: {
+    loungeTitle:    "JTBラウンジ",
+    loungeLocation: "1F FLAME",
+    loungeHours:    "11:30 ～ 16:30",
+    loungeNotes: [
+      "★特典としてJTBラウンジ利用付商品でご予約のお客様のみご利用可能です。",
+      "★ご滞在中何度でもご利用可能です。",
+      "★ご利用時は、レストラン係員にJTB発行のバウチャーをご提示ください。"
+    ]
+  },
+
+  /* Japanese-only loyalty box. Shown whenever the page is being read
+     in Japanese, regardless of which of the three pages it is —
+     it appears on HH_JP, Non_HH_JP and the (Japanese-only) JTB letter,
+     but on neither English letter. */
+  premiumClub: {
+    titleJp: "ヒルトンプレミアムクラブジャパン",
+    bulletsJp: [
+      "・会員限定割引宿泊プランで25%OFF！",
+      "・ご宿泊と一緒でレストラン20%OFF！今回のお食事代から割引対象！",
+      "・フロントデスクにて入会可能！詳しくはフロントデスクまでお問い合わせくださいませ。"
+    ]
+  },
+
+  windowNotice: {
+    en: "Please be aware that opening the windows in your room may allow insects to enter. Kindly handle with care when opening and closing the windows.",
+    jp: "客室の窓を開けた場合、外部から虫が侵入する可能性がございます。どうぞご了承くださいませ。窓の開閉には十分ご注意くださいますようお願い申し上げます。"
+  }
+};
+
+/* =============================================================
+   SYNC LAYER
+   Talks to this site's own /api/content endpoint.
+   Falls back to this browser's storage if the server is not
+   reachable — so the file still works opened by double-click.
+   ============================================================= */
+
+var HotelSync = (function () {
+  "use strict";
+
+  var LOCAL_KEY  = "hnv_content";
+  var API        = "/api/content";
+  var POLL_SECS  = 15;
+
+  var serverUp = null;   // null = unknown yet
+
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
+  /* Merge saved content over the defaults so new fields never
+     break an older saved copy. */
+  function merge(base, saved) {
+    if (!saved || typeof saved !== "object") return clone(base);
+    var out = clone(base);
+    Object.keys(saved).forEach(function (k) {
+      if (Array.isArray(saved[k])) out[k] = clone(saved[k]);
+      else if (saved[k] && typeof saved[k] === "object") out[k] = merge(out[k] || {}, saved[k]);
+      else out[k] = saved[k];
+    });
+    return out;
+  }
+
+  function readLocal() {
+    try {
+      var raw = localStorage.getItem(LOCAL_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+  function writeLocal(data) {
+    try { localStorage.setItem(LOCAL_KEY, JSON.stringify(data)); return true; }
+    catch (e) { return false; }
+  }
+
+  /* ── PUBLIC ────────────────────────────────── */
+
+  /* Returns { data, source } — source is 'server' | 'local' | 'default' */
+  async function load() {
+    try {
+      var res = await fetch(API, { cache: "no-store" });
+      if (res.ok) {
+        serverUp = true;
+        var body = await res.json();
+        if (body && body.content) return { data: merge(DEFAULT_CONTENT, body.content), source: "server" };
+        return { data: clone(DEFAULT_CONTENT), source: "default" };
+      }
+      throw new Error("HTTP " + res.status);
+    } catch (e) {
+      serverUp = false;
+      var local = readLocal();
+      return {
+        data: merge(DEFAULT_CONTENT, local),
+        source: local ? "local" : "default",
+        offline: true
+      };
+    }
+  }
+
+  async function save(data) {
+    data.meta = data.meta || {};
+    data.meta.updatedAt = new Date().toISOString();
+    writeLocal(data);
+
+    try {
+      var res = await fetch(API, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: data })
+      });
+      if (res.status === 401) {
+        window.location.href = "/login";
+        throw new Error("Session expired — redirecting to sign in.");
+      }
+      if (!res.ok) {
+        var txt = await res.text().catch(function () { return ""; });
+        throw new Error("Server refused the save (" + res.status + ") " + txt.slice(0, 120));
+      }
+      serverUp = true;
+      return { ok: true, source: "server" };
+    } catch (e) {
+      serverUp = false;
+      return { ok: false, source: "local", error: e.message };
+    }
+  }
+
+  /* Calls cb(data) whenever the content changes elsewhere. */
+  function subscribe(cb) {
+    var lastStamp = null;
+    var timer = null;
+
+    async function check() {
+      try {
+        var res = await load();
+        var stamp = (res.data.meta && res.data.meta.updatedAt) || "";
+        if (lastStamp === null) { lastStamp = stamp; return; }
+        if (stamp !== lastStamp) { lastStamp = stamp; cb(res.data); }
+      } catch (e) { /* keep showing the last good copy */ }
+    }
+
+    function start() { stop(); timer = setInterval(check, POLL_SECS * 1000); }
+    function stop()  { if (timer) { clearInterval(timer); timer = null; } }
+
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) stop();
+      else { check(); start(); }
+    });
+
+    window.addEventListener("storage", function (e) {
+      if (e.key === LOCAL_KEY) load().then(function (r) { cb(r.data); });
+    });
+
+    load().then(function (r) { lastStamp = (r.data.meta && r.data.meta.updatedAt) || ""; });
+    start();
+  }
+
+  function reset() {
+    try { localStorage.removeItem(LOCAL_KEY); } catch (e) {}
+    return clone(DEFAULT_CONTENT);
+  }
+
+  function filterFor(list, page) {
+    return (list || []).filter(function (r) { return !r.showIn || r.showIn.indexOf(page) !== -1; });
+  }
+
+  function isOnline() { return serverUp === true; }
+
+  return {
+    load: load, save: save, subscribe: subscribe, reset: reset,
+    merge: merge, filterFor: filterFor, isOnline: isOnline, LOCAL_KEY: LOCAL_KEY
+  };
+})();
+
+/* =============================================================
+   PAGE RENDERER
+   buildHTML(data, page, lang, opts) is pure — same function used
+   by the live landing pages and by the admin's preview panel.
+   ============================================================= */
+
+var HotelRender = (function () {
+  "use strict";
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+  function escML(s) {
+    return esc(s).replace(/\r?\n/g, "<br>");
+  }
+  function isJP(l) { return l === "jp"; }
+  function jpc(l)  { return isJP(l) ? " jp" : ""; }
+
+  var L = {
+    en: {
+      links: "Useful Links", restaurants: "Restaurants and Room Service",
+      facilities: "Hotel Facilities", wifi: "Wi-Fi", services: "Other Services",
+      checkout: "Check-out Time",
+      venue: "Venue", restaurant: "Restaurant", meal: "Meal", hours: "Operating Hours"
+    },
+    jp: {
+      links: "各種ご案内", restaurants: "レストラン、ルームサービス",
+      facilities: "施設案内", wifi: "インターネット（Wi-Fi）", services: "サービス",
+      checkout: "チェックアウト",
+      venue: "場所", restaurant: "店舗名", meal: "食事", hours: "営業時間"
+    }
+  };
+
+  function filterFor(list, page) {
+    return (list || []).filter(function (r) { return !r.showIn || r.showIn.indexOf(page) !== -1; });
+  }
+
+  /* ── HERO ────────────────────────────────────── */
+  function heroHTML(data, page, lang) {
+    var j = isJP(lang);
+    var pg = (data.pages && data.pages[page]) || {};
+    var badge = (j ? pg.badgeJp : pg.badgeEn) || "";
+    var intro = (j ? pg.introJp : pg.introEn) || "";
+    return (badge ? '<span class="eyebrow' + jpc(lang) + '">' + esc(badge) + '</span>' : '') +
+      '<h1 class="hotel-name">' + esc(data.meta.hotelName) + '</h1>' +
+      (j ? '<div class="hotel-name-jp">' + esc(data.meta.hotelNameJP) + '</div>' : '') +
+      '<div class="rule"></div>' +
+      (intro ? '<p class="hero-copy' + jpc(lang) + '">' + escML(intro) + '</p>' : '') +
+      '<span class="hero-month">' + esc(j ? data.meta.monthJP : data.meta.month) + '</span>';
+  }
+
+  /* ── TAX NOTICE ──────────────────────────────── */
+  function taxHTML(data, lang) {
+    var j = isJP(lang), t = data.tax || {};
+    var url = j ? t.urlJp : t.urlEn;
+    var label = (j ? t.linkJp : t.linkEn) || url;
+    return '<div class="notice">' +
+      '<p class="' + (j ? "jp" : "") + '">' + escML(j ? t.jp : t.en) + '</p>' +
+      (t.en2 || t.jp2 ? '<p class="' + (j ? "jp" : "") + '" style="margin-top:.5rem">' + escML(j ? t.jp2 : t.en2) + '</p>' : '') +
+      (url ? '<a class="notice-link" href="' + esc(url) + '" target="_blank" rel="noopener">' +
+             esc(label) + ' <span aria-hidden="true">↗</span></a>' : '') +
+      '</div>';
+  }
+
+  /* ── USEFUL LINKS ────────────────────────────── */
+  function linksHTML(data, page, lang) {
+    var j = isJP(lang), t = L[lang];
+    var items = filterFor(data.links, page);
+    if (!items.length) return "";
+
+    var cards = items.map(function (it) {
+      var url   = it.url;
+      var label = (j ? it.labelJp : it.labelEn) || it.labelEn;
+      var note  = j ? it.noteJp : it.noteEn;
+      var details = j ? it.detailsJp : it.detailsEn;
+      var detailsHTML = (details && details.length)
+        ? '<ul class="linkcard-details' + jpc(lang) + '">' +
+            details.map(function (d) { return '<li>' + esc(d) + '</li>'; }).join('') +
+          '</ul>'
+        : '';
+      if (!url) return '';
+      return '<a class="linkcard" href="' + esc(url) + '" target="_blank" rel="noopener">' +
+               '<span class="linkcard-label' + jpc(lang) + '">' + esc(label) + '</span>' +
+               (note ? '<span class="linkcard-note' + jpc(lang) + '">' + esc(note) + '</span>' : '') +
+               detailsHTML +
+               '<span class="linkcard-go" aria-hidden="true">↗</span>' +
+             '</a>';
+    }).join("");
+
+    return '<section class="section">' +
+      '<div class="section-head"><span class="mark" aria-hidden="true">◎</span>' +
+      '<h2 class="' + (j ? "jp" : "") + '">' + esc(t.links) + '</h2></div>' +
+      '<div class="linkgrid">' + cards + '</div>' +
+    '</section>';
+  }
+
+  /* ── RESTAURANTS ─────────────────────────────── */
+  function restaurantsHTML(data, page, lang) {
+    var j = isJP(lang), t = L[lang];
+    var rows = filterFor(data.restaurants, page);
+    if (!rows.length) return "";
+
+    var body = rows.map(function (r) {
+      var name = j ? r.nameJp : r.nameEn;
+      var meal = j ? (r.mealJp || r.mealEn) : (r.mealEn || r.mealJp);
+      var hrs  = j ? r.hoursJp : r.hoursEn;
+      var note = j ? r.noteJp : r.noteEn;
+      var nameCell = r.url
+        ? '<a href="' + esc(r.url) + '" target="_blank" rel="noopener">' + esc(name) + ' <span aria-hidden="true">↗</span></a>'
+        : esc(name);
+      return '<tr>' +
+        '<td data-l="' + esc(t.venue) + '"><span class="floor">' + esc((j && r.floorJp) || r.floor) + '</span></td>' +
+        '<td data-l="' + esc(t.restaurant) + '" class="cell-name ' + (j ? "jp" : "") + '">' + nameCell + '</td>' +
+        '<td data-l="' + esc(t.meal) + '">' + (meal ? '<span class="meal' + jpc(lang) + '">' + esc(meal) + '</span>' : '') + '</td>' +
+        '<td data-l="' + esc(t.hours) + '" class="cell-hours ' + (j ? "jp" : "") + '">' + esc(hrs) +
+          (note ? '<span class="sub">' + esc(note) + '</span>' : '') + '</td>' +
+      '</tr>';
+    }).join("");
+
+    var safety = data.restaurantSafety ? (j ? data.restaurantSafety.jp : data.restaurantSafety.en) : "";
+    var foot   = data.restaurantNote   ? (j ? data.restaurantNote.jp   : data.restaurantNote.en)   : "";
+
+    return '<section class="section">' +
+      '<div class="section-head"><span class="mark" aria-hidden="true">◆</span>' +
+      '<h2 class="' + (j ? "jp" : "") + '">' + esc(t.restaurants) + '</h2></div>' +
+      (safety ? '<p class="safety-banner' + jpc(lang) + '">' + esc(safety) + '</p>' : '') +
+      '<div class="tbl-scroll"><table class="tbl">' +
+        '<thead><tr><th>' + esc(t.venue) + '</th><th>' + esc(t.restaurant) + '</th>' +
+        '<th>' + esc(t.meal) + '</th><th>' + esc(t.hours) + '</th></tr></thead>' +
+        '<tbody>' + body + '</tbody>' +
+      '</table></div>' +
+      (foot ? '<p class="foot-note' + jpc(lang) + '">' + escML(foot) + '</p>' : '') +
+    '</section>';
+  }
+
+  /* ── FACILITIES ──────────────────────────────── */
+  function facilitiesHTML(data, page, lang) {
+    var j = isJP(lang), t = L[lang];
+    var items = filterFor(data.facilities, page);
+    if (!items.length) return "";
+
+    var cards = items.map(function (f) {
+      var name  = j ? f.nameJp : f.nameEn;
+      var hrs   = j ? f.hoursJp : f.hoursEn;
+      var notes = j ? f.notesJp : f.notesEn;
+      return '<article class="card">' +
+        '<div class="fl">' + esc((j && f.floorJp) || f.floor) + '</div>' +
+        '<h4 class="' + (j ? "jp" : "") + '">' + esc(name) + '</h4>' +
+        (hrs ? '<div class="hrs' + jpc(lang) + '">' + esc(hrs) + '</div>' : '') +
+        (notes ? '<p class="nt' + jpc(lang) + '">' + escML(notes) + '</p>' : '') +
+      '</article>';
+    }).join("");
+
+    return '<section class="section">' +
+      '<div class="section-head"><span class="mark" aria-hidden="true">▲</span>' +
+      '<h2 class="' + (j ? "jp" : "") + '">' + esc(t.facilities) + '</h2></div>' +
+      '<div class="cards">' + cards + '</div>' +
+    '</section>';
+  }
+
+  /* ── WI-FI (single row, page-specific content) ──── */
+  function wifiHTML(data, page, lang) {
+    var j = isJP(lang), t = L[lang], w = data.wifi || {};
+    var pageBlock = w[page] || {};
+    var val = j ? pageBlock.valueJp : pageBlock.valueEn;
+    if (!val) return "";
+    return '<section class="section">' +
+      '<div class="section-head"><span class="mark" aria-hidden="true">📶</span>' +
+      '<h2 class="' + (j ? "jp" : "") + '">' + esc(t.wifi) + '</h2></div>' +
+      '<div class="wifi-box">' +
+        '<p class="' + (j ? "jp" : "") + '">' + escML(val) + '</p>' +
+      '</div>' +
+    '</section>';
+  }
+
+  /* ── OTHER SERVICES ──────────────────────────── */
+  function servicesHTML(data, page, lang) {
+    var j = isJP(lang), t = L[lang];
+    var rows = filterFor(data.services, page);
+    if (!rows.length) return "";
+    var body = rows.map(function (s) {
+      return '<div class="svc-row">' +
+        '<dt class="' + (j ? "jp" : "") + '">' + esc(j ? s.labelJp : s.labelEn) + '</dt>' +
+        '<dd class="' + (j ? "jp" : "") + '">' + escML(j ? s.valueJp : s.valueEn) + '</dd>' +
+      '</div>';
+    }).join("");
+    return '<section class="section">' +
+      '<div class="section-head"><span class="mark" aria-hidden="true">✦</span>' +
+      '<h2 class="' + (j ? "jp" : "") + '">' + esc(t.services) + '</h2></div>' +
+      '<dl class="svc">' + body + '</dl>' +
+    '</section>';
+  }
+
+  /* ── JTB LOUNGE ──────────────────────────────── */
+  function jtbLoungeHTML(data, page, lang) {
+    if (page !== "jtb") return "";
+    var jt = data.jtb || {};
+    var notes = (jt.loungeNotes || []).map(function (n) { return '<li class="jp">' + esc(n) + '</li>'; }).join("");
+    return '<div class="callout callout--gold">' +
+             '<h3 class="jp">' + esc(jt.loungeTitle) + '</h3>' +
+             '<p class="jp">' + esc(jt.loungeLocation) + '</p>' +
+             '<div class="big">' + esc(jt.loungeHours) + '</div>' +
+             '<ul class="plain">' + notes + '</ul>' +
+           '</div>';
+  }
+
+  /* ── PREMIUM CLUB (Japanese only, any page) ──── */
+  function premiumClubHTML(data, lang) {
+    if (!isJP(lang)) return "";
+    var pc = data.premiumClub; if (!pc) return "";
+    var bullets = (pc.bulletsJp || []).map(function (b) { return '<li>' + esc(b) + '</li>'; }).join("");
+    return '<div class="callout callout--teal">' +
+             '<h3 class="jp">' + esc(pc.titleJp) + '</h3>' +
+             '<ul class="plain jp">' + bullets + '</ul>' +
+           '</div>';
+  }
+
+  /* ── WINDOW / INSECT NOTICE ──────────────────── */
+  function windowNoticeHTML(data, lang) {
+    var j = isJP(lang), w = data.windowNotice; if (!w) return "";
+    var txt = j ? w.jp : w.en; if (!txt) return "";
+    return '<p class="window-notice' + jpc(lang) + '">' + escML(txt) + '</p>';
+  }
+
+  /* ── CHECK-OUT ───────────────────────────────── */
+  function checkoutHTML(data, page, lang) {
+    var j = isJP(lang), t = L[lang];
+    var pg = (data.pages && data.pages[page]) || {};
+    var txt = j ? pg.checkoutJp : pg.checkoutEn;
+    if (!txt) return "";
+    return '<section class="section">' +
+      '<div class="section-head"><span class="mark" aria-hidden="true">■</span>' +
+      '<h2 class="' + (j ? "jp" : "") + '">' + esc(t.checkout) + '</h2></div>' +
+      '<div class="checkout">' +
+        '<div class="time">' + esc(data.meta.checkoutTime) + (j ? "まで" : " a.m.") + '</div>' +
+        '<p class="' + (j ? "jp" : "") + '">' + escML(txt) + '</p>' +
+      '</div>' +
+      windowNoticeHTML(data, lang) +
+    '</section>';
+  }
+
+  /* ── FOOTER ──────────────────────────────────── */
+  function footHTML(data, page, lang, footNote) {
+    var j = isJP(lang);
+    var stamp = data.meta.updatedAt
+      ? new Date(data.meta.updatedAt).toLocaleString(j ? "ja-JP" : "en-GB", { dateStyle: "medium", timeStyle: "short" })
+      : "";
+    return '<strong>' + esc(j ? data.meta.hotelNameJP : data.meta.hotelName) + '</strong> · ' +
+      esc(j ? data.meta.monthJP : data.meta.month) +
+      (footNote ? ' · ' + esc(footNote) : '') +
+      (stamp ? '<span class="stamp">Updated ' + esc(stamp) + '</span>' : '');
+  }
+
+  var FOOT_NOTE = { hh: "Hilton Honors", nonhh: "", jtb: "JTB" };
+
+  /* ── PURE BUILD (used by both production pages and the admin preview) ── */
+  function buildHTML(data, page, lang) {
+    var langs = page === "jtb" ? ["jp"] : ["en", "jp"];
+    var langbar = langs.length > 1
+      ? '<nav class="langbar" aria-label="Language">' +
+          langs.map(function (l) {
+            return '<button class="langbtn" type="button" data-lang="' + l + '" aria-pressed="' +
+                   (l === lang) + '">' + (l === "jp" ? "日本語" : "English") + '</button>';
+          }).join("") +
+        '</nav>'
+      : "";
+
+    return '<div class="wrap">' +
+      '<header class="hero">' + heroHTML(data, page, lang) + '</header>' +
+      langbar +
+      taxHTML(data, lang) +
+      linksHTML(data, page, lang) +
+      restaurantsHTML(data, page, lang) +
+      jtbLoungeHTML(data, page, lang) +
+      facilitiesHTML(data, page, lang) +
+      wifiHTML(data, page, lang) +
+      servicesHTML(data, page, lang) +
+      checkoutHTML(data, page, lang) +
+      premiumClubHTML(data, lang) +
+      '<footer class="foot">' + footHTML(data, page, lang, FOOT_NOTE[page]) + '</footer>' +
+    '</div>';
+  }
+
+  /* ── MOUNT (production pages: fetches + live-syncs) ─────────── */
+  async function mount(opts) {
+    var root = document.getElementById("app");
+    var langs = opts.page === "jtb" ? ["jp"] : ["en", "jp"];
+    var lang = langs[0];
+    var data = null;
+
+    function draw() {
+      root.innerHTML = buildHTML(data, opts.page, lang);
+      Array.prototype.forEach.call(root.querySelectorAll(".langbtn"), function (b) {
+        b.addEventListener("click", function () {
+          lang = b.dataset.lang;
+          document.documentElement.lang = lang === "jp" ? "ja" : "en";
+          draw();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      });
+    }
+
+    function flash() {
+      var el = document.createElement("div");
+      el.className = "updated-flash";
+      el.textContent = lang === "jp" ? "最新の情報に更新されました" : "Updated just now";
+      document.body.appendChild(el);
+      requestAnimationFrame(function () { el.classList.add("show"); });
+      setTimeout(function () {
+        el.classList.remove("show");
+        setTimeout(function () { el.remove(); }, 400);
+      }, 2600);
+    }
+
+    var first = await HotelSync.load();
+    data = first.data;
+    document.documentElement.lang = lang === "jp" ? "ja" : "en";
+    draw();
+
+    HotelSync.subscribe(function (fresh) {
+      data = fresh;
+      var y = window.scrollY;
+      draw();
+      window.scrollTo(0, y);
+      flash();
+    });
+  }
+
+  return { mount: mount, buildHTML: buildHTML, esc: esc, escML: escML, filterFor: filterFor };
+})();
+
+HotelRender.mount({ page: "jtb" });
+</script>
+
+</body>
+</html>

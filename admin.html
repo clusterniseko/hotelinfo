@@ -1,0 +1,1931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Content Manager — Hilton Niseko Village</title>
+
+<!--
+  ═══════════════════════════════════════════════════════════════
+  CONTENT MANAGER
+
+  Edit the three landing pages from here. Everything this page
+  needs is inside this one file.
+  ═══════════════════════════════════════════════════════════════
+-->
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500&display=swap');
+
+:root{
+  --navy:#16283F; --navy-2:#23405F; --gold:#B08D3C; --gold-lt:#D6B767;
+  --bg:#F4F6F8; --panel:#FFF; --ink:#22262C; --gray:#6B7280;
+  --line:#E2E5EA; --ok:#1B7A4C; --warn:#B45309; --danger:#B02A2A;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+
+/* ── TOP BAR ─────────────────────────── */
+.top{position:sticky;top:0;z-index:80;background:var(--navy);color:#fff;
+  display:flex;align-items:center;justify-content:space-between;padding:.7rem 1.25rem;gap:1rem;flex-wrap:wrap}
+.brand{font-family:'Cormorant Garamond',Georgia,serif;font-size:1.15rem;color:var(--gold-lt);letter-spacing:.05em;line-height:1.15}
+.brand small{display:block;font-family:'Inter',sans-serif;font-size:.6rem;color:rgba(255,255,255,.45);letter-spacing:.13em;text-transform:uppercase}
+.top-right{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+
+.sync-pill{display:inline-flex;align-items:center;gap:.4rem;font-size:.73rem;
+  padding:.3rem .7rem;border-radius:999px;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.75)}
+.dot{width:7px;height:7px;border-radius:50%;background:#8A94A3;flex-shrink:0}
+.dot.live{background:#4ADE80;box-shadow:0 0 0 3px rgba(74,222,128,.18)}
+.dot.local{background:var(--gold-lt)}
+.dot.err{background:#F87171}
+.dot.busy{background:var(--gold-lt);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.35}}
+
+.autosave{display:inline-flex;align-items:center;gap:.4rem;font-size:.73rem;color:rgba(255,255,255,.6);cursor:pointer;user-select:none}
+.autosave input{accent-color:var(--gold-lt);margin:0}
+
+.btn{border:none;border-radius:6px;padding:.45rem .95rem;font-size:.8rem;font-family:inherit;font-weight:500;cursor:pointer;transition:.15s;white-space:nowrap}
+.btn:focus-visible{outline:2px solid var(--gold-lt);outline-offset:2px}
+.btn:disabled{opacity:.45;cursor:default}
+.btn-gold{background:var(--gold);color:#fff}
+.btn-gold:hover:not(:disabled){background:var(--gold-lt)}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,.26);color:#fff}
+.btn-ghost:hover{border-color:var(--gold-lt);color:var(--gold-lt)}
+.btn-line{background:#fff;border:1px solid var(--line);color:var(--ink)}
+.btn-line:hover{border-color:var(--gold);color:var(--navy)}
+.btn-sm{padding:.28rem .65rem;font-size:.74rem}
+
+/* ── TABS ────────────────────────────── */
+.tabs{background:var(--panel);border-bottom:1px solid var(--line);display:flex;gap:0;
+  padding:0 1.25rem;position:sticky;top:57px;z-index:70;overflow-x:auto}
+.tab{background:none;border:none;padding:.85rem 1.05rem;font-size:.84rem;font-family:inherit;
+  color:var(--gray);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:.15s}
+.tab:hover{color:var(--navy)}
+.tab[aria-selected="true"]{color:var(--navy);font-weight:600;border-bottom-color:var(--gold)}
+.tab .pgbadge{display:inline-block;margin-left:.4rem;font-size:.6rem;padding:.08rem .35rem;
+  border-radius:3px;background:var(--bg);color:var(--gray);font-weight:500;letter-spacing:.04em}
+
+.main{padding:1.5rem 1.75rem 5rem;max-width:1300px;margin:0 auto}
+.panel[hidden]{display:none}
+
+.page-head{margin-bottom:1.35rem}
+.page-head h1{font-family:'Cormorant Garamond',Georgia,serif;font-size:1.7rem;font-weight:500;color:var(--navy)}
+.page-head p{color:var(--gray);font-size:.82rem;margin-top:.25rem;line-height:1.6}
+.page-head a{color:var(--navy)}
+
+/* ── SPLIT LAYOUT: preview | edit ─────── */
+.split{display:grid;grid-template-columns:380px 1fr;gap:1.5rem;align-items:start}
+@media (max-width:1050px){ .split{grid-template-columns:1fr} }
+
+.preview-col{position:sticky;top:115px}
+@media (max-width:1050px){ .preview-col{position:static} }
+
+.preview-shell{background:#0d1b2e;border-radius:20px;padding:.6rem;box-shadow:0 15px 45px rgba(0,0,0,.22)}
+.preview-toolbar{display:flex;align-items:center;justify-content:space-between;padding:.3rem .5rem .6rem;color:rgba(255,255,255,.55);font-size:.7rem;letter-spacing:.05em;text-transform:uppercase}
+.preview-toolbar .dots{display:flex;gap:.3rem}
+.preview-toolbar .dots span{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.25)}
+.preview-frame{background:#fff;border-radius:14px;overflow-y:auto;max-height:74vh;-webkit-overflow-scrolling:touch}
+.preview-frame::-webkit-scrollbar{width:8px}
+.preview-frame::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:4px}
+.preview-hint{font-size:.72rem;color:var(--gray);text-align:center;margin-top:.7rem;line-height:1.5}
+
+/* ── CARDS (edit forms) ──────────────── */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;margin-bottom:1.15rem;overflow:hidden}
+.card-head{padding:.75rem 1.1rem;border-bottom:1px solid var(--line);background:#FCFCFD;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.card-head h2{font-size:.86rem;font-weight:600;color:var(--navy)}
+.card-head .hint{font-size:.72rem;color:var(--gray);font-weight:400}
+.card-body{padding:1.1rem}
+
+.grid{display:grid;gap:.9rem}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+.g1{grid-template-columns:1fr}
+.f{display:flex;flex-direction:column;gap:.28rem}
+.f label{font-size:.69rem;letter-spacing:.06em;text-transform:uppercase;color:var(--gray);font-weight:600}
+.f label .tag{display:inline-block;margin-left:.3rem;font-size:.59rem;padding:.05rem .3rem;border-radius:3px;background:var(--bg);color:var(--gray)}
+.f input,.f textarea{border:1px solid var(--line);border-radius:6px;padding:.48rem .62rem;font-size:.85rem;
+  font-family:inherit;color:var(--ink);background:#fff;width:100%;transition:.15s}
+.f input:focus,.f textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(176,141,60,.12)}
+.f textarea{resize:vertical;min-height:76px;line-height:1.6}
+
+/* ── REPEATER ROWS ───────────────────── */
+.row{border:1px solid var(--line);border-radius:8px;padding:.85rem;margin-bottom:.7rem;background:#FDFDFE}
+.row-top{display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;margin-bottom:.7rem}
+.row-title{font-size:.8rem;font-weight:600;color:var(--navy);line-height:1.4}
+.row-meta{display:block;font-size:.67rem;font-weight:400;color:var(--gray);margin-top:.15rem}
+.row-meta.shared{color:var(--warn)}
+.row-tools{display:flex;gap:.3rem;flex-shrink:0}
+.icon-btn{background:#fff;border:1px solid var(--line);border-radius:5px;width:26px;height:26px;cursor:pointer;
+  color:var(--gray);font-size:.78rem;line-height:1;display:flex;align-items:center;justify-content:center}
+.icon-btn:hover{border-color:var(--gold);color:var(--navy)}
+.icon-btn.del:hover{border-color:#E8C4C4;color:var(--danger)}
+
+.showin{display:flex;gap:.55rem;align-items:center;flex-wrap:wrap;margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line)}
+.showin .lbl{font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--gray);font-weight:600}
+.chk{display:inline-flex;align-items:center;gap:.3rem;font-size:.77rem;cursor:pointer;
+  border:1px solid var(--line);border-radius:999px;padding:.18rem .6rem;background:#fff;user-select:none}
+.chk input{accent-color:var(--gold);margin:0}
+.chk:has(input:checked){border-color:var(--gold);background:#FAF7F0;color:var(--navy);font-weight:500}
+.chk input:disabled{opacity:.5}
+
+.add-row{width:100%;border:1px dashed var(--line);background:#fff;border-radius:8px;padding:.55rem;
+  color:var(--gray);font-size:.8rem;cursor:pointer;font-family:inherit}
+.add-row:hover{border-color:var(--gold);color:var(--navy);background:#FAF7F0}
+
+.lines{list-style:none;display:flex;flex-direction:column;gap:.45rem}
+.lines li{display:flex;gap:.45rem;align-items:center}
+.lines input{flex:1;border:1px solid var(--line);border-radius:6px;padding:.45rem .6rem;font-size:.84rem;font-family:inherit}
+.lines input:focus{outline:none;border-color:var(--gold)}
+
+.note{border-radius:8px;padding:.9rem 1.1rem;font-size:.82rem;line-height:1.65;margin-bottom:1.15rem}
+.note-warn{background:#FFF8EC;border:1px solid #EFDCB4;color:#7A5A18}
+.note-ok{background:#F0FAF4;border:1px solid #BFE5CE;color:#14603C}
+.note strong{font-weight:600}
+
+code{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:.08rem .32rem;
+  font-family:ui-monospace,Menlo,monospace;font-size:.79rem;color:var(--navy)}
+
+.toast{position:fixed;bottom:1.2rem;left:50%;transform:translate(-50%,160%);background:var(--navy);color:#fff;
+  padding:.65rem 1.2rem;border-radius:999px;font-size:.81rem;z-index:200;transition:transform .3s;box-shadow:0 8px 30px rgba(0,0,0,.2)}
+.toast.show{transform:translate(-50%,0)}
+.toast.ok{background:var(--ok)}
+.toast.err{background:var(--danger)}
+
+@media(max-width:820px){
+  .g2,.g3{grid-template-columns:1fr}
+  .main{padding:1.25rem 1rem 5rem}
+  .tabs{position:static}
+}
+
+/* Namespaced copy of the landing-page styles, scoped to .preview-frame
+   so the live preview inside each tab looks exactly like the real
+   page without clashing with the admin's own styles. */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=Noto+Serif+JP:wght@300;400;500;600&display=swap');
+:root {
+  --navy:      #16283F;
+  --navy-soft: #23405F;
+  --gold:      #B08D3C;
+  --gold-lt:   #D6B767;
+  --cream:     #FBF9F5;
+  --mist:      #EEF2F6;
+  --ink:       #26292E;
+  --gray:      #6E6A64;
+  --line:      #E0DACE;
+  --white:     #FFFFFF;
+  --teal:      #1E5F6B;
+  --moss:      #2F5D45;
+}
+.preview-frame, .preview-frame *::before, .preview-frame *::after { box-sizing: border-box; margin: 0; padding: 0; }
+.preview-frame html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+.preview-frame html { scroll-behavior: auto; }
+.preview-frame { animation: none !important; transition: none !important; }
+}
+.preview-frame body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.preview-frame .jp { font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', YuMincho, serif; }
+.preview-frame .wrap { max-width: 880px; margin: 0 auto; background: var(--white); box-shadow: 0 0 60px rgba(0,0,0,0.05); }
+.preview-frame .hero {
+  background: var(--navy);
+  color: var(--white);
+  padding: 3.5rem 1.75rem 2.75rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.preview-frame .hero::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 25% 0%, rgba(176,141,60,0.22), transparent 55%);
+  pointer-events: none;
+}
+.preview-frame .hero > * { position: relative; z-index: 1; }
+.preview-frame .eyebrow {
+  display: inline-block;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold-lt);
+  border: 1px solid rgba(214,183,103,0.4);
+  padding: 0.32rem 0.95rem;
+  border-radius: 999px;
+  margin-bottom: 1.35rem;
+}
+.preview-frame .hotel-name {
+  font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  font-weight: 300;
+  font-size: clamp(1.9rem, 5.5vw, 3rem);
+  letter-spacing: 0.03em;
+  line-height: 1.12;
+}
+.preview-frame .hotel-name-jp {
+  font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+  font-weight: 300;
+  font-size: clamp(1.1rem, 3vw, 1.4rem);
+  color: var(--gold-lt);
+  margin-top: 0.45rem;
+}
+.preview-frame .rule { width: 44px; height: 1px; background: var(--gold); margin: 1.15rem auto; }
+.preview-frame .hero-copy { color: rgba(255,255,255,0.68); font-size: 0.89rem; max-width: 520px; margin: 0 auto; line-height: 1.7; }
+.preview-frame .hero-month {
+  display: inline-block; margin-top: 1.35rem;
+  font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-lt);
+}
+.preview-frame .langbar {
+  display: flex; justify-content: center; gap: 0.4rem;
+  padding: 0.85rem 1rem; border-bottom: 1px solid var(--line);
+  background: var(--white); position: sticky; top: 0; z-index: 20;
+}
+.preview-frame .langbtn {
+  background: none; border: 1px solid var(--line); border-radius: 999px;
+  padding: 0.55rem 1.35rem; min-height: 42px; font-size: 0.82rem; cursor: pointer;
+  color: var(--gray); font-family: inherit; transition: all 0.18s;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.preview-frame .langbtn:hover { border-color: var(--gold); color: var(--navy); }
+.preview-frame .langbtn[aria-pressed="true"] { background: var(--navy); color: var(--white); border-color: var(--navy); }
+.preview-frame .langbtn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.preview-frame .callout {
+  margin: 1.5rem 1.75rem 0;
+  border-radius: 10px;
+  padding: 1.4rem 1.5rem;
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+.preview-frame .callout--gold { background: linear-gradient(135deg, var(--navy), var(--navy-soft)); }
+.preview-frame .callout--teal { background: linear-gradient(135deg, var(--teal), #2A7C8A); }
+.preview-frame .callout--moss { background: linear-gradient(135deg, var(--moss), #3F7A5C); }
+.preview-frame .callout h3 {
+  font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  font-size: 1.25rem; font-weight: 500; color: var(--gold-lt); margin-bottom: 0.5rem;
+}
+.preview-frame .callout h3.jp { font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif; font-size: 1.05rem; }
+.preview-frame .callout p { font-size: 0.85rem; color: rgba(255,255,255,0.78); line-height: 1.7; }
+.preview-frame .callout .big {
+  font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif; font-size: 1.75rem;
+  color: var(--gold-lt); margin: 0.35rem 0 0.55rem; letter-spacing: 0.02em;
+}
+.preview-frame .callout ul { list-style: none; margin-top: 0.6rem; }
+.preview-frame .callout li {
+  font-size: 0.8rem; color: rgba(255,255,255,0.75); line-height: 1.75;
+  padding-left: 1.1rem; position: relative;
+}
+.preview-frame .callout li::before { content: '★'; position: absolute; left: 0; color: var(--gold-lt); font-size: 0.7rem; top: 0.35rem; }
+.preview-frame .notice {
+  margin: 1.5rem 1.75rem 0;
+  border-left: 3px solid var(--gold);
+  background: linear-gradient(90deg, rgba(176,141,60,0.09), rgba(176,141,60,0.02));
+  padding: 0.95rem 1.25rem;
+  border-radius: 0 6px 6px 0;
+}
+.preview-frame .notice p { font-size: 0.82rem; color: var(--gray); line-height: 1.65; }
+.preview-frame .section { padding: 2.25rem 1.75rem; border-top: 1px solid var(--line); }
+.preview-frame .section:first-of-type { border-top: none; }
+.preview-frame .section-head { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.4rem; }
+.preview-frame .section-head .mark {
+  width: 34px; height: 34px; flex-shrink: 0; border-radius: 8px;
+  background: linear-gradient(135deg, var(--navy), var(--navy-soft));
+  color: var(--gold-lt); display: flex; align-items: center; justify-content: center;
+  font-size: 0.95rem;
+}
+.preview-frame .section-head h2 {
+  font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif; font-weight: 500;
+  font-size: 1.45rem; color: var(--navy); letter-spacing: 0.01em;
+}
+.preview-frame .section-head h2.jp { font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif; font-size: 1.15rem; font-weight: 500; }
+.preview-frame .tbl-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.preview-frame table.tbl { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 520px; }
+.preview-frame table.tbl th {
+  background: var(--navy); color: var(--white); font-weight: 400;
+  padding: 0.65rem 0.85rem; text-align: left;
+  font-size: 0.72rem; letter-spacing: 0.07em; text-transform: uppercase;
+}
+.preview-frame table.tbl td { padding: 0.7rem 0.85rem; border-bottom: 1px solid var(--mist); vertical-align: top; line-height: 1.5; }
+.preview-frame table.tbl tr:last-child td { border-bottom: none; }
+.preview-frame table.tbl tbody tr:nth-child(even) td { background: rgba(238,242,246,0.4); }
+.preview-frame .floor { font-weight: 600; color: var(--navy); font-size: 0.78rem; white-space: nowrap; }
+.preview-frame .meal {
+  display: inline-block; font-size: 0.68rem; padding: 0.15rem 0.55rem;
+  border-radius: 999px; background: var(--mist); color: var(--gray); white-space: nowrap;
+}
+.preview-frame .sub { display: block; font-size: 0.74rem; color: var(--gray); margin-top: 0.15rem; }
+.preview-frame .foot-note {
+  margin-top: 0.9rem; padding: 0.85rem 1rem; background: var(--mist);
+  border-radius: 6px; font-size: 0.79rem; color: var(--gray); line-height: 1.7;
+}
+.preview-frame .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 0.9rem; }
+.preview-frame .card { border: 1px solid var(--line); border-radius: 8px; padding: 1.05rem; background: var(--white); }
+.preview-frame .card .fl {
+  font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gold); font-weight: 600; margin-bottom: 0.35rem;
+}
+.preview-frame .card h4 { font-size: 0.92rem; color: var(--navy); font-weight: 600; margin-bottom: 0.35rem; }
+.preview-frame .card h4.jp { font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif; font-weight: 500; }
+.preview-frame .card .hrs { font-size: 0.82rem; color: var(--ink); margin-bottom: 0.35rem; }
+.preview-frame .card .nt { font-size: 0.75rem; color: var(--gray); line-height: 1.6; }
+.preview-frame .svc { display: flex; flex-direction: column; gap: 0.75rem; }
+.preview-frame .svc-row {
+  display: grid; grid-template-columns: 150px 1fr; gap: 1rem;
+  padding: 0.9rem 1rem; background: var(--mist); border-radius: 8px; align-items: start;
+}
+.preview-frame .svc-row dt {
+  font-size: 0.82rem; font-weight: 600; color: var(--navy);
+  letter-spacing: 0.01em;
+}
+.preview-frame .svc-row dt.jp { font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif; text-transform: none; letter-spacing: 0.02em; font-size: 0.85rem; }
+.preview-frame .svc-row dd { font-size: 0.85rem; color: var(--ink); line-height: 1.7; }
+.preview-frame .code {
+  display: inline-block; background: var(--navy); color: var(--gold-lt);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  padding: 0.1rem 0.5rem; border-radius: 4px; font-size: 0.85rem; letter-spacing: 0.06em;
+}
+.preview-frame .checkout { background: var(--mist); border-radius: 8px; padding: 1.35rem 1.5rem; }
+.preview-frame .checkout .time {
+  font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif; font-size: 2.1rem;
+  color: var(--navy); font-weight: 300; line-height: 1; margin-bottom: 0.6rem;
+}
+.preview-frame .checkout p { font-size: 0.83rem; color: var(--gray); line-height: 1.8; }
+.preview-frame .foot {
+  background: var(--navy); color: rgba(255,255,255,0.45);
+  text-align: center; padding: 1.75rem 1.5rem;
+  font-size: 0.74rem; letter-spacing: 0.06em;
+}
+.preview-frame .foot strong { color: var(--gold-lt); font-weight: 500; }
+.preview-frame .foot .stamp { display: block; margin-top: 0.5rem; font-size: 0.68rem; opacity: 0.6; }
+.preview-frame [hidden] { display: none !important; }
+.preview-frame .loading { padding: 4rem 2rem; text-align: center; color: var(--gray); font-size: 0.85rem; }
+@media (max-width: 600px) {
+.preview-frame .hero { padding: 2.75rem 1.25rem 2.25rem; }
+.preview-frame .section { padding: 1.85rem 1.25rem; }
+.preview-frame .callout, .preview-frame .notice { margin-left: 1.25rem; margin-right: 1.25rem; }
+.preview-frame .cards { grid-template-columns: 1fr; }
+.preview-frame .svc-row { grid-template-columns: 1fr; gap: 0.3rem; }
+.preview-frame .tbl-scroll { overflow-x: visible; }
+.preview-frame table.tbl { min-width: 0; display: block; }
+.preview-frame table.tbl thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.preview-frame table.tbl tbody { display: block; }
+.preview-frame table.tbl tr {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.15rem 0.6rem;
+    align-items: baseline;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.75rem 0.9rem;
+    margin-bottom: 0.6rem;
+    background: var(--white);
+  }
+.preview-frame table.tbl tbody tr:nth-child(even) td { background: transparent; }
+.preview-frame table.tbl td { display: block; border: none; padding: 0; }
+.preview-frame table.tbl td.cell-name {
+    grid-column: 1 / -1;
+    order: 1;
+    font-weight: 600;
+    color: var(--navy);
+    font-size: 0.92rem;
+    margin-bottom: 0.35rem;
+  }
+.preview-frame table.tbl td:nth-child(1) { grid-column: 1 / -1; order: 0; }
+.preview-frame table.tbl td:nth-child(3) { grid-column: 1 / -1; order: 2; margin-bottom: 0.3rem; }
+.preview-frame table.tbl td:nth-child(3):empty { display: none; }
+.preview-frame table.tbl td.cell-hours { grid-column: 1 / -1; order: 3; font-size: 0.86rem; }
+.preview-frame table.tbl td.cell-hours::before {
+    content: attr(data-l);
+    display: block;
+    font-size: 0.64rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 0.15rem;
+  }
+.preview-frame .floor { font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); }
+}
+.preview-frame .section-intro { font-size: .84rem; color: var(--gray); line-height: 1.7; margin: -0.6rem 0 1.1rem; }
+.preview-frame .notice-link {
+  display: inline-flex; align-items: center; gap: .3rem;
+  min-height: 40px; margin-top: .35rem; font-size: .82rem; font-weight: 600;
+  color: var(--navy); text-decoration: none; border-bottom: 1px solid var(--gold);
+  padding-bottom: 1px;
+}
+.preview-frame .notice-link:hover { color: var(--gold); }
+.preview-frame .linkgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: .7rem; }
+.preview-frame .linkcard {
+  position: relative; display: flex; flex-direction: column; gap: .18rem;
+  border: 1px solid var(--line); border-radius: 8px; padding: .9rem 2.1rem .9rem 1rem;
+  background: var(--white); text-decoration: none; color: var(--navy);
+  transition: border-color .16s, background .16s, transform .16s;
+}
+.preview-frame .linkcard:hover { border-color: var(--gold); background: #FCFAF5; }
+.preview-frame .linkcard:active { transform: scale(.99); }
+.preview-frame .linkcard:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.preview-frame .linkcard-label { font-size: .88rem; font-weight: 600; line-height: 1.35; }
+.preview-frame .linkcard-note { font-size: .74rem; color: var(--gray); line-height: 1.4; }
+.preview-frame .linkcard-go {
+  position: absolute; right: .85rem; top: 50%; transform: translateY(-50%);
+  color: var(--gold); font-size: .85rem;
+}
+.preview-frame table.tbl a {
+  display: inline-flex; align-items: center; gap: .25rem;
+  min-height: 40px; padding: .25rem 0;
+  color: var(--navy); text-decoration: none; font-weight: 600;
+}
+.preview-frame table.tbl a span { color: var(--gold); }
+.preview-frame table.tbl a:hover { color: var(--gold); }
+.preview-frame table.tbl a:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 3px; }
+@media (max-width: 600px) {
+.preview-frame .linkgrid { grid-template-columns: 1fr; }
+}
+.preview-frame .safety-banner {
+  background: #FFF6D6; border: 1px solid #EBD98A; color: #6B5A12;
+  font-size: .82rem; font-weight: 600; padding: .6rem .9rem;
+  border-radius: 6px; margin-bottom: 1rem; line-height: 1.5;
+}
+.preview-frame .wifi-box {
+  background: var(--mist); border-radius: 8px; padding: 1rem 1.15rem;
+}
+.preview-frame .wifi-box p { font-size: .85rem; color: var(--ink); line-height: 1.75; }
+.preview-frame .window-notice {
+  margin-top: 1rem; font-size: .78rem; color: #A33; line-height: 1.6;
+  border-left: 3px solid #E8A0A0; padding-left: .7rem;
+}
+.preview-frame .linkcard-details { list-style: none; margin-top: .3rem; padding: 0; }
+.preview-frame .linkcard-details li {
+  font-size: .72rem; color: var(--gray); line-height: 1.55; padding-left: .8rem; position: relative;
+}
+.preview-frame .linkcard-details li::before { content: '·'; position: absolute; left: 0; color: var(--gold); }
+.preview-frame ul.plain { list-style: none; }
+.preview-frame ul.plain li {
+  font-size: .8rem; color: rgba(255,255,255,.8); line-height: 1.75; padding-left: 0;
+}
+.preview-frame ul.plain li::before { content: none; }
+.preview-frame .updated-flash {
+  position: fixed;
+  bottom: 1.1rem;
+  left: 50%;
+  transform: translate(-50%, 160%);
+  background: var(--navy);
+  color: var(--gold-lt);
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  box-shadow: 0 8px 30px rgba(0,0,0,.22);
+  z-index: 300;
+  transition: transform .35s ease;
+  pointer-events: none;
+}
+.preview-frame .updated-flash.show { transform: translate(-50%, 0); }
+.preview-frame .section-intro { font-size: 0.83rem; color: var(--gray); margin-bottom: 1rem; line-height: 1.6; }
+.preview-frame .linkgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 0.7rem; }
+.preview-frame .linkcard {
+  display: block;
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.9rem 2.1rem 0.9rem 1rem;
+  background: var(--white);
+  text-decoration: none;
+  transition: border-color .16s, background .16s, transform .16s;
+}
+.preview-frame .linkcard:hover { border-color: var(--gold); background: #FDFBF6; }
+.preview-frame .linkcard:active { transform: translateY(1px); }
+.preview-frame .linkcard:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.preview-frame .linkcard-name { display: block; font-size: 0.88rem; font-weight: 600; color: var(--navy); line-height: 1.35; }
+.preview-frame .linkcard-desc { display: block; font-size: 0.74rem; color: var(--gray); margin-top: 0.2rem; line-height: 1.45; }
+.preview-frame .linkcard-go {
+  position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%);
+  color: var(--gold); font-size: 0.9rem;
+}
+.preview-frame .notice-link {
+  display: inline-block; margin-top: 0.5rem;
+  font-size: 0.79rem; color: var(--navy); font-weight: 600;
+  text-decoration: none; border-bottom: 1px solid var(--gold); padding-bottom: 1px;
+}
+.preview-frame .notice-link:hover { color: var(--gold); }
+.preview-frame .row-link { color: var(--navy); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--gold); }
+.preview-frame .row-link:hover { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">Hilton Niseko Village<small>Content Manager</small></div>
+  <div class="top-right">
+    <span class="sync-pill"><span class="dot" id="syncDot"></span><span id="syncText">Starting…</span></span>
+    <label class="autosave"><input type="checkbox" id="autosave" checked> Autosave</label>
+    <button class="btn btn-ghost btn-sm" id="btnRevert" type="button">Reset to original</button>
+    <button class="btn btn-gold" id="btnSave" type="button">Save</button>
+    <form method="POST" action="/logout" style="margin:0">
+      <button class="btn btn-ghost btn-sm" type="submit">Sign out</button>
+    </form>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="tab" role="tab" data-tab="hh" aria-selected="true">HH page <span class="pgbadge">EN · JP</span></button>
+  <button class="tab" role="tab" data-tab="nonhh" aria-selected="false">Non-HH page <span class="pgbadge">EN · JP</span></button>
+  <button class="tab" role="tab" data-tab="jtb" aria-selected="false">JTB page <span class="pgbadge">JP</span></button>
+  <button class="tab" role="tab" data-tab="settings" aria-selected="false">Settings</button>
+</nav>
+
+<main class="main">
+
+<section class="panel" id="p-hh" role="tabpanel"></section>
+<section class="panel" id="p-nonhh" role="tabpanel" hidden></section>
+<section class="panel" id="p-jtb" role="tabpanel" hidden></section>
+
+<section class="panel" id="p-settings" role="tabpanel" hidden>
+  <div class="page-head">
+    <h1>Settings</h1>
+    <p>Status, backups, and how to change the login.</p>
+  </div>
+
+  <div id="syncStatusBox"></div>
+
+  <div class="card">
+    <div class="card-head"><h2>Sign-in</h2></div>
+    <div class="card-body">
+      <p style="font-size:.84rem;line-height:1.75">
+        Username and password are set on the server as <code>ADMIN_USER</code> and
+        <code>ADMIN_PASSWORD</code>. Change them any time from your hosting
+        provider's environment variables — no code edits needed.
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>Backup</h2><span class="hint">Worth doing at the start of each month</span></div>
+    <div class="card-body">
+      <p style="font-size:.84rem;line-height:1.7;color:var(--gray);margin-bottom:.9rem">
+        Download a copy of everything as it stands now, or restore one you saved earlier.
+        Restoring replaces all content on all three pages.
+      </p>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button class="btn btn-line btn-sm" id="btnExport" type="button">Download backup</button>
+        <label class="btn btn-line btn-sm" style="display:inline-flex;align-items:center">
+          Restore from backup<input type="file" id="fileIn" accept=".json,application/json" hidden>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>Start over</h2></div>
+    <div class="card-body">
+      <p style="font-size:.84rem;line-height:1.7;color:var(--gray);margin-bottom:.9rem">
+        Puts back the original August 2026 content transcribed from the guest letters.
+      </p>
+      <button class="btn btn-line btn-sm" id="btnRevert2" type="button">Reset to original</button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =============================================================
+   DEFAULT CONTENT
+   Transcribed from the five August 2026 guest letters
+   (HH_ENG, HH_JP, JTB, Non_HH_ENG, Non_HH_JP), including every
+   QR code destination found in those PDFs.
+
+   You do not need to edit this file — use the admin instead.
+   This is only the fallback shown before anything has been saved.
+   ============================================================= */
+
+var DEFAULT_CONTENT = {
+  meta: {
+    hotelName:    "Hilton Niseko Village",
+    hotelNameJP:  "ヒルトンニセコビレッジ",
+    month:        "August 2026",
+    monthJP:      "8月 2026",
+    checkoutTime: "11:00",
+    updatedAt:    null
+  },
+
+  /* Header + checkout wording, one block per landing page.
+     Checkout copy genuinely differs by page in the source PDFs. */
+  pages: {
+    hh: {
+      badgeEn: "Hotel Information",
+      badgeJp: "ご宿泊のお客様へ",
+      introEn: "Thank you for choosing the Hilton Niseko Village as your holiday destination! In this letter, you will find an overview of our hotel facilities.",
+      introJp: "この度は、ヒルトンニセコビレッジにご宿泊いただき誠にありがとうございます。より快適にお過ごし頂くためのご案内をご参照ください。",
+      checkoutEn: "Check out is 11:00 a.m. We recommend settling charges beforehand. (Please let us know in advance if you would like an express check-out.)",
+      checkoutJp: "11:00までにご出発のお手続きをお願いします。チェックアウトの時間帯は混雑が予想されますので、前日のご精算をおすすめしております。エクスプレスチェックアウトご希望のお客様は、フロントにご連絡下さい。"
+    },
+    nonhh: {
+      badgeEn: "Hotel Information",
+      badgeJp: "ご宿泊のお客様へ",
+      introEn: "Thank you for choosing the Hilton Niseko Village as your holiday destination! In this letter, you will find an overview of our hotel facilities.",
+      introJp: "この度は、ヒルトンニセコビレッジにご宿泊いただき誠にありがとうございます。より快適にお過ごし頂くためのご案内をご参照ください。",
+      checkoutEn: "Check out is 11:00 a.m. We recommend settling charges beforehand. (Please let us know in advance if you would like an express check-out.)",
+      checkoutJp: "11:00までにご出発のお手続きをお願いいします。チェックアウトの時間帯は混雑が予想されますので、前日のご精算をおすすめしております。エクスプレスチェックアウトご希望のお客様は、フロントにご連絡下さい。チェックアウト日中のお荷物のお預かり、温泉のご利用を承っております、お声がけください。ご不明な点やご質問などございましたら、どうぞお気軽にスタッフまでお問い合わせ下さい。ヒルトンニセコビレッジでのご滞在を、ごゆっくりお楽しみ下さい。"
+    },
+    jtb: {
+      badgeEn: "JTB Guest",
+      badgeJp: "JTBよりご予約のお客様へ",
+      introEn: "",
+      introJp: "この度は、ヒルトンニセコビレッジにご宿泊いただき誠にありがとうございます。私共の大切なパートナーであるJTB様よりご予約いただいた、お客様により快適にお過ごし頂くためのご案内をご参照ください。",
+      checkoutEn: "",
+      checkoutJp: "11:00までにご出発のお手続きをお願いします。チェックアウトの時間帯は混雑が予想されますので、前日のご精算をおすすめしております。エクスプレスチェックアウトご希望のお客様は、フロントにご連絡下さい。チェックアウト日中のお荷物のお預かり、温泉のご利用を承っております、お声がけください。ご不明な点やご質問などございましたら、どうぞお気軽にスタッフまでお問い合わせ下さい。ヒルトンニセコビレッジでのご滞在を、ごゆっくりお楽しみ下さい。"
+    }
+  },
+
+  /* Accommodation tax — two separate notices now (Niseko + Hokkaido).
+     The QR in the letter points at the Niseko PDF only. */
+  tax: {
+    en:     "Niseko accommodation tax will apply from NOV 2024. For full details, please kindly refer to the Niseko town office website using this QR code.",
+    jp:     "2024年11月よりニセコ町宿泊税が導入されます。詳しくはニセコ町ホームページをご参照くださいませ。",
+    en2:    "Hokkaido accommodation tax will apply from APR 2026.",
+    jp2:    "2026年4月より北海道宿泊税が導入されます。",
+    linkEn: "Niseko town office — accommodation tax",
+    linkJp: "ニセコ町ホームページ（宿泊税）",
+    urlEn:  "https://www.town.niseko.lg.jp/resources/output/contents/file/release/10654/49470/gaiyou-eng-syukuhakuzei.pdf",
+    urlJp:  "https://www.town.niseko.lg.jp/resources/output/contents/file/release/10654/49470/gaiyou-syukuhakuzei.pdf"
+  },
+
+  /* Short highlighted safety line shown just above the dining table */
+  restaurantSafety: {
+    en: "For your safety, please do not wear yukata or slippers in the hotel restaurants.",
+    jp: "浴衣、スリッパでのレストラン利用はご遠慮ください。"
+  },
+
+  restaurantNote: {
+    en: "We highly recommend making dinner reservations in advance. Please dial #9 from your room.\nPlease refrain from wearing yukata/bathrobes and slippers to the restaurants.",
+    jp: "・夕食は事前のご予約をおすすめしております。内線9番（フロント）までお問い合わせくださいませ。"
+  },
+
+  /* showIn controls which landing pages each row appears on.
+     Note: EZO (Pub) no longer appears in any of the five letters. */
+  restaurants: [
+    { id: "r1", floor: "1F", floorJp: "1F",
+      nameEn: "Flame (Lounge)", nameJp: "Flame（ラウンジ）",
+      mealEn: "", mealJp: "",
+      hoursEn: "11:00 am -", noteEn: "L.O. 8:30 pm",
+      hoursJp: "11:00 -", noteJp: "ラストオーダー 20:30",
+      url: "", showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "r2", floor: "2F", floorJp: "2F",
+      nameEn: "MELT (Buffet)", nameJp: "Melt（ビュッフェ）",
+      mealEn: "Breakfast", mealJp: "朝食",
+      hoursEn: "6:00 am -", noteEn: "L.O. 9:30 am",
+      hoursJp: "6:00 -", noteJp: "ラストオーダー 9:30",
+      url: "", showIn: ["hh", "jtb"] },
+
+    { id: "r2b", floor: "3F", floorJp: "3F",
+      nameEn: "YOTEI (Buffet)", nameJp: "YOTEI（ビュッフェ）",
+      mealEn: "Breakfast", mealJp: "朝食",
+      hoursEn: "6:00 am -", noteEn: "L.O. 9:30 am",
+      hoursJp: "06:00 -", noteJp: "ラストオーダー 9:30",
+      url: "", showIn: ["nonhh"] },
+
+    { id: "r3", floor: "2F", floorJp: "2F",
+      nameEn: "Melt", nameJp: "Melt",
+      mealEn: "Lunch", mealJp: "昼食",
+      hoursEn: "11:30 am -", noteEn: "L.O. 2:30 pm",
+      hoursJp: "11:30 -", noteJp: "ラストオーダー 14:30",
+      url: "", showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "r4", floor: "2F", floorJp: "2F",
+      nameEn: "Melt", nameJp: "Melt",
+      mealEn: "Dinner", mealJp: "夕食",
+      hoursEn: "5:30 pm -", noteEn: "L.O. 9:00 pm",
+      hoursJp: "17:30 -", noteJp: "ラストオーダー 21:00",
+      url: "", showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "r7", floor: "2F", floorJp: "2F",
+      nameEn: "Sisam", nameJp: "Sisam",
+      mealEn: "Dinner", mealJp: "夕食",
+      hoursEn: "5:30 pm -", noteEn: "L.O. 9:00 pm",
+      hoursJp: "17:30 -", noteJp: "ラストオーダー 21:00",
+      url: "", showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "r8", floor: "2F", floorJp: "2F",
+      nameEn: "Rera (Sushi)", nameJp: "Rera（寿司）",
+      mealEn: "Dinner", mealJp: "夕食",
+      hoursEn: "5:30 pm -", noteEn: "L.O. 9:00 pm",
+      hoursJp: "17:30 -", noteJp: "ラストオーダー 21:00",
+      url: "", showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "r6", floor: "2F", floorJp: "2F",
+      nameEn: "Pirka (Teppanyaki)", nameJp: "Pirka（鉄板焼き）",
+      mealEn: "Dinner", mealJp: "夕食",
+      hoursEn: "Available exclusively by advance reservation.", noteEn: "",
+      hoursJp: "事前予約制", noteJp: "※Pirka（鉄板焼き）は前日までの事前予約となっております。",
+      url: "", showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "r10", floor: "Room Service", floorJp: "ルームサービス",
+      nameEn: "Room Service", nameJp: "ルームサービス",
+      mealEn: "", mealJp: "",
+      hoursEn: "Please place your order using this QR code.", noteEn: "L.O. 10 PM",
+      hoursJp: "QRコードよりご注文ください。", noteJp: "ラストオーダー 10PM",
+      url: "https://hiltonnisekovillage.wi-q.com/",
+      showIn: ["hh", "nonhh", "jtb"] }
+  ],
+
+  facilities: [
+    { id: "f1", floor: "1F", floorJp: "1F",
+      nameEn: "Hot Springs (Onsen)", nameJp: "大浴場・露天風呂",
+      hoursEn: "5:30 am ~ 11:00 pm (Last Entry 10:45 pm)",
+      hoursJp: "【営業時間】05:30～23:00（最終入場22:45）",
+      notesEn: "To avoid accidental loss or misplaced shoes in the hot springs change rooms, we encourage you to use the brown slippers provided in your room when visiting the facility.",
+      notesJp: "・サンダル、靴の履き間違えが多数発生しております。\n・お部屋備え付けのスリッパをご利用ください。\n・浴衣、スリッパでお部屋よりご利用可能です。\n・アクセスにはルームキーが必要です。",
+      showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "f2", floor: "1F", floorJp: "1F",
+      nameEn: "Gym", nameJp: "フィットネスジム",
+      hoursEn: "Open 24 hours",
+      hoursJp: "24時間ご利用いただけます",
+      notesEn: "Available for staying guests 16 years and above & Hilton NV fitness club members only.",
+      notesJp: "・アクセスにはルームキーが必要です。\n・シューズ等の貸し出しはございません、ご自身の物をご利用ください。",
+      showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "f3", floor: "1F", floorJp: "1F",
+      nameEn: "Hilton Shop", nameJp: "売店",
+      hoursEn: "08:00 am - 10:00 pm",
+      hoursJp: "08:00 - 22:00",
+      notesEn: "", notesJp: "",
+      showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "f4", floor: "1F", floorJp: "1F",
+      nameEn: "Aranya Spa", nameJp: "ARANYA SPA",
+      hoursEn: "Opening hours vary depending on the day of the week.",
+      hoursJp: "営業日によって営業時間が異なります。",
+      notesEn: "Please check availability via the QR code at SPA entrance.",
+      notesJp: "詳細につきましてはSPAまでお問い合わせくださいませ。",
+      showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "f5", floor: "10 & 15F", floorJp: "10・15F",
+      nameEn: "Ice Machine", nameJp: "製氷機",
+      hoursEn: "",
+      hoursJp: "24時間ご利用いただけます",
+      notesEn: "Ice dispensers are located on the 10th & 15th floor elevator halls.",
+      notesJp: "・各部屋備え付けのアイスペールをご持参ください。",
+      showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "f6", floor: "1F (outside)", floorJp: "1F屋外",
+      nameEn: "Smoking Area", nameJp: "喫煙所",
+      hoursEn: "Open 24 hours",
+      hoursJp: "24時間ご利用いただけます",
+      notesEn: "Located outside the main entrance – right side.",
+      notesJp: "1階正面玄関自動扉を出て右手屋外にございます。",
+      showIn: ["hh", "nonhh", "jtb"] }
+  ],
+
+  /* Wi-Fi is written out per page, since the model genuinely differs:
+     HH and JTB get a simple network + passcode, Non-HH is billed
+     per day unless the guest joins Hilton Honors. */
+  wifi: {
+    labelEn: "High Speed Internet (Wi-Fi)",
+    labelJp: "インターネット（Wi-Fi）",
+    hh: {
+      valueEn: "Complimentary Wi-Fi is available in all public areas using 'hhonors-public'. In-room Wi-Fi is available by logging onto network \"hhonors\" and using passcode \"hhaug\" (you DO NOT need to input your room number or name).",
+      valueJp: "1階～3階 無料「hhonors-public」\n客室「hhonors」ログイン画面の部屋番号・名前には入力不要です。アクセスコードに「hhaug」にてログインして下さい。"
+    },
+    nonhh: {
+      valueEn: "Complimentary Wi-Fi is available in the public areas using 'hhonors-public'. In-room Wi-Fi is available at a charge of 550 yen per day for standard Wi-Fi usage (3MB). Become a Hilton Honors member today to enjoy instant complimentary in-room Wi-Fi.",
+      valueJp: "客室階 有料（24時間550円）1階～3階 無料「hhonors-public」\n※ヒルトンオーナーズにご登録頂くと無料でご利用できます。下記QRコードよりご登録ください。"
+    },
+    jtb: {
+      valueEn: "",
+      valueJp: "1階～3階 無料「hhonors-public」\n客室「hhonors」ログイン画面の部屋番号・名前には入力不要です。アクセスコードに「2026aug」にてログインして下さい。"
+    }
+  },
+
+  services: [
+    { id: "s1",
+      labelEn: "Daily Room Cleaning", labelJp: "清掃",
+      valueEn: "Housekeeping will perform daily room cleaning from 10:00 a.m. Please inform Front Desk or switch on the 'Do not disturb' sign if you do not require cleaning of your room.",
+      valueJp: "不要な場合は、内線9番（フロントデスク）にお申し付けください。",
+      showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "s2",
+      labelEn: "In-Room Safe", labelJp: "貴重品",
+      valueEn: "Please make use of the in-room safe for storing valuable items. Place your items in the safe, close the door, enter a 4-digit PIN code and press the 'lock' button.",
+      valueJp: "貴重品はお部屋の金庫にて保管いただきますようお願いいたします。",
+      showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "s3",
+      labelEn: "NV Shuttle Bus", labelJp: "シャトルバス",
+      valueEn: "Please show your room key to the driver when boarding the shuttle.",
+      valueJp: "ホテル、ヒラフ、俱知安間の無料シャトルバスがございます。コンシェルジュデスクにて時刻表を配布しております。\n*ルームキーを乗車の際にドライバーさんにご提示ください。",
+      showIn: ["hh", "nonhh", "jtb"] }
+  ],
+
+  /* The QR codes on page 2 of every letter, now as tappable links.
+     Room Service is handled inline in the dining table instead. */
+  links: [
+    { id: "l1",
+      labelEn: "In-room Settings", labelJp: "室内空調設定",
+      noteEn: "Electric switch operation method", noteJp: "電気スイッチ操作方法",
+      url: "https://nisekocluster.com/guides/",
+      showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "l2",
+      labelEn: "Luggage Assistance", labelJp: "お荷物のお手伝い",
+      noteEn: "", noteJp: "",
+      url: "https://pickup.nisekocluster.com/",
+      showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "l3",
+      labelEn: "QR Concierge", labelJp: "QRコンシェルジュ",
+      noteEn: "Location & access, shuttle timetable, restaurant menus and activities",
+      noteJp: "交通案内・シャトルバス時刻表・レストランメニュー・アクティビティ情報",
+      url: "https://nisekovillage.hiltonjapan.co.jp/activity/lp/QRconcierge",
+      detailsEn: [
+        "Location & Access to the hotel",
+        "Niseko Village Shuttle Bus Timetable",
+        "Hotel Restaurant Information",
+        "Activities including: Niseko Village Activities, Lion Adventure Activities, Niseko Area Tourist Information"
+      ],
+      detailsJp: [
+        "交通案内",
+        "倶知安駅間無料シャトルバス時刻表",
+        "館内レストランメニュー",
+        "アクティビティ情報（ニセコビレッジ運営アクティビティ、ライオンアドベンチャー運営アクティビティ、ニセコ周辺観光案内）"
+      ],
+      showIn: ["hh", "nonhh", "jtb"] },
+
+    { id: "l4",
+      labelEn: "Join Hilton Honors", labelJp: "ヒルトンオーナーズ（無料）",
+      noteEn: "Membership is free — instant benefits", noteJp: "会員登録は無料です",
+      url: "https://secure3.hilton.com/en/hh/customer/join/joinHHonors.htm?OCODE=I296W",
+      showIn: ["nonhh", "jtb"] }
+  ],
+
+  /* JTB page only */
+  jtb: {
+    loungeTitle:    "JTBラウンジ",
+    loungeLocation: "1F FLAME",
+    loungeHours:    "11:30 ～ 16:30",
+    loungeNotes: [
+      "★特典としてJTBラウンジ利用付商品でご予約のお客様のみご利用可能です。",
+      "★ご滞在中何度でもご利用可能です。",
+      "★ご利用時は、レストラン係員にJTB発行のバウチャーをご提示ください。"
+    ]
+  },
+
+  /* Japanese-only loyalty box. Shown whenever the page is being read
+     in Japanese, regardless of which of the three pages it is —
+     it appears on HH_JP, Non_HH_JP and the (Japanese-only) JTB letter,
+     but on neither English letter. */
+  premiumClub: {
+    titleJp: "ヒルトンプレミアムクラブジャパン",
+    bulletsJp: [
+      "・会員限定割引宿泊プランで25%OFF！",
+      "・ご宿泊と一緒でレストラン20%OFF！今回のお食事代から割引対象！",
+      "・フロントデスクにて入会可能！詳しくはフロントデスクまでお問い合わせくださいませ。"
+    ]
+  },
+
+  windowNotice: {
+    en: "Please be aware that opening the windows in your room may allow insects to enter. Kindly handle with care when opening and closing the windows.",
+    jp: "客室の窓を開けた場合、外部から虫が侵入する可能性がございます。どうぞご了承くださいませ。窓の開閉には十分ご注意くださいますようお願い申し上げます。"
+  }
+};
+
+/* =============================================================
+   SYNC LAYER
+   Talks to this site's own /api/content endpoint.
+   Falls back to this browser's storage if the server is not
+   reachable — so the file still works opened by double-click.
+   ============================================================= */
+
+var HotelSync = (function () {
+  "use strict";
+
+  var LOCAL_KEY  = "hnv_content";
+  var API        = "/api/content";
+  var POLL_SECS  = 15;
+
+  var serverUp = null;   // null = unknown yet
+
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
+  /* Merge saved content over the defaults so new fields never
+     break an older saved copy. */
+  function merge(base, saved) {
+    if (!saved || typeof saved !== "object") return clone(base);
+    var out = clone(base);
+    Object.keys(saved).forEach(function (k) {
+      if (Array.isArray(saved[k])) out[k] = clone(saved[k]);
+      else if (saved[k] && typeof saved[k] === "object") out[k] = merge(out[k] || {}, saved[k]);
+      else out[k] = saved[k];
+    });
+    return out;
+  }
+
+  function readLocal() {
+    try {
+      var raw = localStorage.getItem(LOCAL_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+  function writeLocal(data) {
+    try { localStorage.setItem(LOCAL_KEY, JSON.stringify(data)); return true; }
+    catch (e) { return false; }
+  }
+
+  /* ── PUBLIC ────────────────────────────────── */
+
+  /* Returns { data, source } — source is 'server' | 'local' | 'default' */
+  async function load() {
+    try {
+      var res = await fetch(API, { cache: "no-store" });
+      if (res.ok) {
+        serverUp = true;
+        var body = await res.json();
+        if (body && body.content) return { data: merge(DEFAULT_CONTENT, body.content), source: "server" };
+        return { data: clone(DEFAULT_CONTENT), source: "default" };
+      }
+      throw new Error("HTTP " + res.status);
+    } catch (e) {
+      serverUp = false;
+      var local = readLocal();
+      return {
+        data: merge(DEFAULT_CONTENT, local),
+        source: local ? "local" : "default",
+        offline: true
+      };
+    }
+  }
+
+  async function save(data) {
+    data.meta = data.meta || {};
+    data.meta.updatedAt = new Date().toISOString();
+    writeLocal(data);
+
+    try {
+      var res = await fetch(API, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: data })
+      });
+      if (res.status === 401) {
+        window.location.href = "/login";
+        throw new Error("Session expired — redirecting to sign in.");
+      }
+      if (!res.ok) {
+        var txt = await res.text().catch(function () { return ""; });
+        throw new Error("Server refused the save (" + res.status + ") " + txt.slice(0, 120));
+      }
+      serverUp = true;
+      return { ok: true, source: "server" };
+    } catch (e) {
+      serverUp = false;
+      return { ok: false, source: "local", error: e.message };
+    }
+  }
+
+  /* Calls cb(data) whenever the content changes elsewhere. */
+  function subscribe(cb) {
+    var lastStamp = null;
+    var timer = null;
+
+    async function check() {
+      try {
+        var res = await load();
+        var stamp = (res.data.meta && res.data.meta.updatedAt) || "";
+        if (lastStamp === null) { lastStamp = stamp; return; }
+        if (stamp !== lastStamp) { lastStamp = stamp; cb(res.data); }
+      } catch (e) { /* keep showing the last good copy */ }
+    }
+
+    function start() { stop(); timer = setInterval(check, POLL_SECS * 1000); }
+    function stop()  { if (timer) { clearInterval(timer); timer = null; } }
+
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) stop();
+      else { check(); start(); }
+    });
+
+    window.addEventListener("storage", function (e) {
+      if (e.key === LOCAL_KEY) load().then(function (r) { cb(r.data); });
+    });
+
+    load().then(function (r) { lastStamp = (r.data.meta && r.data.meta.updatedAt) || ""; });
+    start();
+  }
+
+  function reset() {
+    try { localStorage.removeItem(LOCAL_KEY); } catch (e) {}
+    return clone(DEFAULT_CONTENT);
+  }
+
+  function filterFor(list, page) {
+    return (list || []).filter(function (r) { return !r.showIn || r.showIn.indexOf(page) !== -1; });
+  }
+
+  function isOnline() { return serverUp === true; }
+
+  return {
+    load: load, save: save, subscribe: subscribe, reset: reset,
+    merge: merge, filterFor: filterFor, isOnline: isOnline, LOCAL_KEY: LOCAL_KEY
+  };
+})();
+
+/* =============================================================
+   PAGE RENDERER
+   buildHTML(data, page, lang, opts) is pure — same function used
+   by the live landing pages and by the admin's preview panel.
+   ============================================================= */
+
+var HotelRender = (function () {
+  "use strict";
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+  function escML(s) {
+    return esc(s).replace(/\r?\n/g, "<br>");
+  }
+  function isJP(l) { return l === "jp"; }
+  function jpc(l)  { return isJP(l) ? " jp" : ""; }
+
+  var L = {
+    en: {
+      links: "Useful Links", restaurants: "Restaurants and Room Service",
+      facilities: "Hotel Facilities", wifi: "Wi-Fi", services: "Other Services",
+      checkout: "Check-out Time",
+      venue: "Venue", restaurant: "Restaurant", meal: "Meal", hours: "Operating Hours"
+    },
+    jp: {
+      links: "各種ご案内", restaurants: "レストラン、ルームサービス",
+      facilities: "施設案内", wifi: "インターネット（Wi-Fi）", services: "サービス",
+      checkout: "チェックアウト",
+      venue: "場所", restaurant: "店舗名", meal: "食事", hours: "営業時間"
+    }
+  };
+
+  function filterFor(list, page) {
+    return (list || []).filter(function (r) { return !r.showIn || r.showIn.indexOf(page) !== -1; });
+  }
+
+  /* ── HERO ────────────────────────────────────── */
+  function heroHTML(data, page, lang) {
+    var j = isJP(lang);
+    var pg = (data.pages && data.pages[page]) || {};
+    var badge = (j ? pg.badgeJp : pg.badgeEn) || "";
+    var intro = (j ? pg.introJp : pg.introEn) || "";
+    return (badge ? '<span class="eyebrow' + jpc(lang) + '">' + esc(badge) + '</span>' : '') +
+      '<h1 class="hotel-name">' + esc(data.meta.hotelName) + '</h1>' +
+      (j ? '<div class="hotel-name-jp">' + esc(data.meta.hotelNameJP) + '</div>' : '') +
+      '<div class="rule"></div>' +
+      (intro ? '<p class="hero-copy' + jpc(lang) + '">' + escML(intro) + '</p>' : '') +
+      '<span class="hero-month">' + esc(j ? data.meta.monthJP : data.meta.month) + '</span>';
+  }
+
+  /* ── TAX NOTICE ──────────────────────────────── */
+  function taxHTML(data, lang) {
+    var j = isJP(lang), t = data.tax || {};
+    var url = j ? t.urlJp : t.urlEn;
+    var label = (j ? t.linkJp : t.linkEn) || url;
+    return '<div class="notice">' +
+      '<p class="' + (j ? "jp" : "") + '">' + escML(j ? t.jp : t.en) + '</p>' +
+      (t.en2 || t.jp2 ? '<p class="' + (j ? "jp" : "") + '" style="margin-top:.5rem">' + escML(j ? t.jp2 : t.en2) + '</p>' : '') +
+      (url ? '<a class="notice-link" href="' + esc(url) + '" target="_blank" rel="noopener">' +
+             esc(label) + ' <span aria-hidden="true">↗</span></a>' : '') +
+      '</div>';
+  }
+
+  /* ── USEFUL LINKS ────────────────────────────── */
+  function linksHTML(data, page, lang) {
+    var j = isJP(lang), t = L[lang];
+    var items = filterFor(data.links, page);
+    if (!items.length) return "";
+
+    var cards = items.map(function (it) {
+      var url   = it.url;
+      var label = (j ? it.labelJp : it.labelEn) || it.labelEn;
+      var note  = j ? it.noteJp : it.noteEn;
+      var details = j ? it.detailsJp : it.detailsEn;
+      var detailsHTML = (details && details.length)
+        ? '<ul class="linkcard-details' + jpc(lang) + '">' +
+            details.map(function (d) { return '<li>' + esc(d) + '</li>'; }).join('') +
+          '</ul>'
+        : '';
+      if (!url) return '';
+      return '<a class="linkcard" href="' + esc(url) + '" target="_blank" rel="noopener">' +
+               '<span class="linkcard-label' + jpc(lang) + '">' + esc(label) + '</span>' +
+               (note ? '<span class="linkcard-note' + jpc(lang) + '">' + esc(note) + '</span>' : '') +
+               detailsHTML +
+               '<span class="linkcard-go" aria-hidden="true">↗</span>' +
+             '</a>';
+    }).join("");
+
+    return '<section class="section">' +
+      '<div class="section-head"><span class="mark" aria-hidden="true">◎</span>' +
+      '<h2 class="' + (j ? "jp" : "") + '">' + esc(t.links) + '</h2></div>' +
+      '<div class="linkgrid">' + cards + '</div>' +
+    '</section>';
+  }
+
+  /* ── RESTAURANTS ─────────────────────────────── */
+  function restaurantsHTML(data, page, lang) {
+    var j = isJP(lang), t = L[lang];
+    var rows = filterFor(data.restaurants, page);
+    if (!rows.length) return "";
+
+    var body = rows.map(function (r) {
+      var name = j ? r.nameJp : r.nameEn;
+      var meal = j ? (r.mealJp || r.mealEn) : (r.mealEn || r.mealJp);
+      var hrs  = j ? r.hoursJp : r.hoursEn;
+      var note = j ? r.noteJp : r.noteEn;
+      var nameCell = r.url
+        ? '<a href="' + esc(r.url) + '" target="_blank" rel="noopener">' + esc(name) + ' <span aria-hidden="true">↗</span></a>'
+        : esc(name);
+      return '<tr>' +
+        '<td data-l="' + esc(t.venue) + '"><span class="floor">' + esc((j && r.floorJp) || r.floor) + '</span></td>' +
+        '<td data-l="' + esc(t.restaurant) + '" class="cell-name ' + (j ? "jp" : "") + '">' + nameCell + '</td>' +
+        '<td data-l="' + esc(t.meal) + '">' + (meal ? '<span class="meal' + jpc(lang) + '">' + esc(meal) + '</span>' : '') + '</td>' +
+        '<td data-l="' + esc(t.hours) + '" class="cell-hours ' + (j ? "jp" : "") + '">' + esc(hrs) +
+          (note ? '<span class="sub">' + esc(note) + '</span>' : '') + '</td>' +
+      '</tr>';
+    }).join("");
+
+    var safety = data.restaurantSafety ? (j ? data.restaurantSafety.jp : data.restaurantSafety.en) : "";
+    var foot   = data.restaurantNote   ? (j ? data.restaurantNote.jp   : data.restaurantNote.en)   : "";
+
+    return '<section class="section">' +
+      '<div class="section-head"><span class="mark" aria-hidden="true">◆</span>' +
+      '<h2 class="' + (j ? "jp" : "") + '">' + esc(t.restaurants) + '</h2></div>' +
+      (safety ? '<p class="safety-banner' + jpc(lang) + '">' + esc(safety) + '</p>' : '') +
+      '<div class="tbl-scroll"><table class="tbl">' +
+        '<thead><tr><th>' + esc(t.venue) + '</th><th>' + esc(t.restaurant) + '</th>' +
+        '<th>' + esc(t.meal) + '</th><th>' + esc(t.hours) + '</th></tr></thead>' +
+        '<tbody>' + body + '</tbody>' +
+      '</table></div>' +
+      (foot ? '<p class="foot-note' + jpc(lang) + '">' + escML(foot) + '</p>' : '') +
+    '</section>';
+  }
+
+  /* ── FACILITIES ──────────────────────────────── */
+  function facilitiesHTML(data, page, lang) {
+    var j = isJP(lang), t = L[lang];
+    var items = filterFor(data.facilities, page);
+    if (!items.length) return "";
+
+    var cards = items.map(function (f) {
+      var name  = j ? f.nameJp : f.nameEn;
+      var hrs   = j ? f.hoursJp : f.hoursEn;
+      var notes = j ? f.notesJp : f.notesEn;
+      return '<article class="card">' +
+        '<div class="fl">' + esc((j && f.floorJp) || f.floor) + '</div>' +
+        '<h4 class="' + (j ? "jp" : "") + '">' + esc(name) + '</h4>' +
+        (hrs ? '<div class="hrs' + jpc(lang) + '">' + esc(hrs) + '</div>' : '') +
+        (notes ? '<p class="nt' + jpc(lang) + '">' + escML(notes) + '</p>' : '') +
+      '</article>';
+    }).join("");
+
+    return '<section class="section">' +
+      '<div class="section-head"><span class="mark" aria-hidden="true">▲</span>' +
+      '<h2 class="' + (j ? "jp" : "") + '">' + esc(t.facilities) + '</h2></div>' +
+      '<div class="cards">' + cards + '</div>' +
+    '</section>';
+  }
+
+  /* ── WI-FI (single row, page-specific content) ──── */
+  function wifiHTML(data, page, lang) {
+    var j = isJP(lang), t = L[lang], w = data.wifi || {};
+    var pageBlock = w[page] || {};
+    var val = j ? pageBlock.valueJp : pageBlock.valueEn;
+    if (!val) return "";
+    return '<section class="section">' +
+      '<div class="section-head"><span class="mark" aria-hidden="true">📶</span>' +
+      '<h2 class="' + (j ? "jp" : "") + '">' + esc(t.wifi) + '</h2></div>' +
+      '<div class="wifi-box">' +
+        '<p class="' + (j ? "jp" : "") + '">' + escML(val) + '</p>' +
+      '</div>' +
+    '</section>';
+  }
+
+  /* ── OTHER SERVICES ──────────────────────────── */
+  function servicesHTML(data, page, lang) {
+    var j = isJP(lang), t = L[lang];
+    var rows = filterFor(data.services, page);
+    if (!rows.length) return "";
+    var body = rows.map(function (s) {
+      return '<div class="svc-row">' +
+        '<dt class="' + (j ? "jp" : "") + '">' + esc(j ? s.labelJp : s.labelEn) + '</dt>' +
+        '<dd class="' + (j ? "jp" : "") + '">' + escML(j ? s.valueJp : s.valueEn) + '</dd>' +
+      '</div>';
+    }).join("");
+    return '<section class="section">' +
+      '<div class="section-head"><span class="mark" aria-hidden="true">✦</span>' +
+      '<h2 class="' + (j ? "jp" : "") + '">' + esc(t.services) + '</h2></div>' +
+      '<dl class="svc">' + body + '</dl>' +
+    '</section>';
+  }
+
+  /* ── JTB LOUNGE ──────────────────────────────── */
+  function jtbLoungeHTML(data, page, lang) {
+    if (page !== "jtb") return "";
+    var jt = data.jtb || {};
+    var notes = (jt.loungeNotes || []).map(function (n) { return '<li class="jp">' + esc(n) + '</li>'; }).join("");
+    return '<div class="callout callout--gold">' +
+             '<h3 class="jp">' + esc(jt.loungeTitle) + '</h3>' +
+             '<p class="jp">' + esc(jt.loungeLocation) + '</p>' +
+             '<div class="big">' + esc(jt.loungeHours) + '</div>' +
+             '<ul class="plain">' + notes + '</ul>' +
+           '</div>';
+  }
+
+  /* ── PREMIUM CLUB (Japanese only, any page) ──── */
+  function premiumClubHTML(data, lang) {
+    if (!isJP(lang)) return "";
+    var pc = data.premiumClub; if (!pc) return "";
+    var bullets = (pc.bulletsJp || []).map(function (b) { return '<li>' + esc(b) + '</li>'; }).join("");
+    return '<div class="callout callout--teal">' +
+             '<h3 class="jp">' + esc(pc.titleJp) + '</h3>' +
+             '<ul class="plain jp">' + bullets + '</ul>' +
+           '</div>';
+  }
+
+  /* ── WINDOW / INSECT NOTICE ──────────────────── */
+  function windowNoticeHTML(data, lang) {
+    var j = isJP(lang), w = data.windowNotice; if (!w) return "";
+    var txt = j ? w.jp : w.en; if (!txt) return "";
+    return '<p class="window-notice' + jpc(lang) + '">' + escML(txt) + '</p>';
+  }
+
+  /* ── CHECK-OUT ───────────────────────────────── */
+  function checkoutHTML(data, page, lang) {
+    var j = isJP(lang), t = L[lang];
+    var pg = (data.pages && data.pages[page]) || {};
+    var txt = j ? pg.checkoutJp : pg.checkoutEn;
+    if (!txt) return "";
+    return '<section class="section">' +
+      '<div class="section-head"><span class="mark" aria-hidden="true">■</span>' +
+      '<h2 class="' + (j ? "jp" : "") + '">' + esc(t.checkout) + '</h2></div>' +
+      '<div class="checkout">' +
+        '<div class="time">' + esc(data.meta.checkoutTime) + (j ? "まで" : " a.m.") + '</div>' +
+        '<p class="' + (j ? "jp" : "") + '">' + escML(txt) + '</p>' +
+      '</div>' +
+      windowNoticeHTML(data, lang) +
+    '</section>';
+  }
+
+  /* ── FOOTER ──────────────────────────────────── */
+  function footHTML(data, page, lang, footNote) {
+    var j = isJP(lang);
+    var stamp = data.meta.updatedAt
+      ? new Date(data.meta.updatedAt).toLocaleString(j ? "ja-JP" : "en-GB", { dateStyle: "medium", timeStyle: "short" })
+      : "";
+    return '<strong>' + esc(j ? data.meta.hotelNameJP : data.meta.hotelName) + '</strong> · ' +
+      esc(j ? data.meta.monthJP : data.meta.month) +
+      (footNote ? ' · ' + esc(footNote) : '') +
+      (stamp ? '<span class="stamp">Updated ' + esc(stamp) + '</span>' : '');
+  }
+
+  var FOOT_NOTE = { hh: "Hilton Honors", nonhh: "", jtb: "JTB" };
+
+  /* ── PURE BUILD (used by both production pages and the admin preview) ── */
+  function buildHTML(data, page, lang) {
+    var langs = page === "jtb" ? ["jp"] : ["en", "jp"];
+    var langbar = langs.length > 1
+      ? '<nav class="langbar" aria-label="Language">' +
+          langs.map(function (l) {
+            return '<button class="langbtn" type="button" data-lang="' + l + '" aria-pressed="' +
+                   (l === lang) + '">' + (l === "jp" ? "日本語" : "English") + '</button>';
+          }).join("") +
+        '</nav>'
+      : "";
+
+    return '<div class="wrap">' +
+      '<header class="hero">' + heroHTML(data, page, lang) + '</header>' +
+      langbar +
+      taxHTML(data, lang) +
+      linksHTML(data, page, lang) +
+      restaurantsHTML(data, page, lang) +
+      jtbLoungeHTML(data, page, lang) +
+      facilitiesHTML(data, page, lang) +
+      wifiHTML(data, page, lang) +
+      servicesHTML(data, page, lang) +
+      checkoutHTML(data, page, lang) +
+      premiumClubHTML(data, lang) +
+      '<footer class="foot">' + footHTML(data, page, lang, FOOT_NOTE[page]) + '</footer>' +
+    '</div>';
+  }
+
+  /* ── MOUNT (production pages: fetches + live-syncs) ─────────── */
+  async function mount(opts) {
+    var root = document.getElementById("app");
+    var langs = opts.page === "jtb" ? ["jp"] : ["en", "jp"];
+    var lang = langs[0];
+    var data = null;
+
+    function draw() {
+      root.innerHTML = buildHTML(data, opts.page, lang);
+      Array.prototype.forEach.call(root.querySelectorAll(".langbtn"), function (b) {
+        b.addEventListener("click", function () {
+          lang = b.dataset.lang;
+          document.documentElement.lang = lang === "jp" ? "ja" : "en";
+          draw();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      });
+    }
+
+    function flash() {
+      var el = document.createElement("div");
+      el.className = "updated-flash";
+      el.textContent = lang === "jp" ? "最新の情報に更新されました" : "Updated just now";
+      document.body.appendChild(el);
+      requestAnimationFrame(function () { el.classList.add("show"); });
+      setTimeout(function () {
+        el.classList.remove("show");
+        setTimeout(function () { el.remove(); }, 400);
+      }, 2600);
+    }
+
+    var first = await HotelSync.load();
+    data = first.data;
+    document.documentElement.lang = lang === "jp" ? "ja" : "en";
+    draw();
+
+    HotelSync.subscribe(function (fresh) {
+      data = fresh;
+      var y = window.scrollY;
+      draw();
+      window.scrollTo(0, y);
+      flash();
+    });
+  }
+
+  return { mount: mount, buildHTML: buildHTML, esc: esc, escML: escML, filterFor: filterFor };
+})();
+
+(function () {
+  "use strict";
+
+  var $  = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+  var data = null, dirty = false, saveTimer = null, built = {};
+  var previewLang = { hh: "en", nonhh: "en", jtb: "jp" };
+
+  var PAGES = [
+    { key: "hh",    label: "HH" },
+    { key: "nonhh", label: "Non-HH" },
+    { key: "jtb",   label: "JTB" }
+  ];
+  var PAGE_LABEL = { hh: "HH", nonhh: "Non-HH", jtb: "JTB" };
+  var PAGE_URL   = { hh: "/hh", nonhh: "/non-hh", jtb: "/jtb" };
+
+  function get(o, p) { return p.split(".").reduce(function (a, k) { return a == null ? undefined : a[k]; }, o); }
+  function set(o, p, v) {
+    var parts = p.split("."), last = parts.pop();
+    var t = parts.reduce(function (a, k) { if (a[k] == null) a[k] = {}; return a[k]; }, o);
+    t[last] = v;
+  }
+
+  function setSync(state, text) {
+    $("#syncDot").className = "dot " + state;
+    $("#syncText").textContent = text;
+  }
+  function toast(msg, kind) {
+    var t = $("#toast");
+    t.textContent = msg;
+    t.className = "toast show " + (kind || "");
+    setTimeout(function () { t.className = "toast " + (kind || ""); }, 2800);
+  }
+
+  function touched() {
+    dirty = true;
+    renderAllPreviews();
+    if ($("#autosave").checked) {
+      clearTimeout(saveTimer);
+      setSync("busy", "Saving…");
+      saveTimer = setTimeout(doSave, 1200);
+    } else {
+      setSync("local", "Unsaved changes");
+    }
+  }
+
+  async function doSave() {
+    clearTimeout(saveTimer);
+    setSync("busy", "Saving…");
+    var res = await HotelSync.save(data);
+    dirty = false;
+    if (res.ok) setSync("live", "Live — guests see this");
+    else { setSync("err", "Not saved to the server"); toast(res.error || "Could not reach the server", "err"); }
+    renderSyncBox();
+    return res;
+  }
+
+  $("#btnSave").addEventListener("click", function () {
+    doSave().then(function (r) { if (r.ok) toast("Saved", "ok"); });
+  });
+  document.addEventListener("keydown", function (e) {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") { e.preventDefault(); doSave(); }
+  });
+  window.addEventListener("beforeunload", function (e) { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
+
+  /* ── generic field binding ────────────────────── */
+  function bindWithin(scope) {
+    $$("[data-bind]", scope).forEach(function (el) {
+      if (el.dataset.bound) return;
+      el.dataset.bound = "1";
+      var path = el.getAttribute("data-bind");
+      var v = get(data, path);
+      el.value = v == null ? "" : v;
+      el.addEventListener("input", function () { set(data, path, el.value); touched(); });
+    });
+  }
+  function refreshBound() {
+    $$("[data-bind]").forEach(function (el) {
+      var v = get(data, el.getAttribute("data-bind"));
+      el.value = v == null ? "" : v;
+    });
+  }
+
+  /* ── live preview ─────────────────────────────── */
+  function renderPreview(page) {
+    var host = $("#preview-" + page);
+    if (!host) return;
+    host.innerHTML = HotelRender.buildHTML(data, page, previewLang[page]);
+    $$(".langbtn", host).forEach(function (b) {
+      b.addEventListener("click", function () {
+        previewLang[page] = b.dataset.lang;
+        renderPreview(page);
+      });
+    });
+  }
+  function renderAllPreviews() {
+    Object.keys(built).forEach(function (p) { renderPreview(p); });
+  }
+
+  /* ── repeater schemas ─────────────────────────── */
+  var SCHEMAS = {
+    links: {
+      title: function (r) { return r.labelEn || r.labelJp || "Untitled"; },
+      blank: function (page) {
+        return { id: "l" + Date.now(), labelEn: "", labelJp: "", noteEn: "", noteJp: "",
+                 url: "", detailsEn: [], detailsJp: [], showIn: [page] };
+      },
+      fields: [
+        { k: "labelEn", l: "Label (EN)",   w: "g2" },
+        { k: "labelJp", l: "Label (JP)",   w: "g2" },
+        { k: "noteEn",  l: "Caption (EN)", w: "g2" },
+        { k: "noteJp",  l: "Caption (JP)", w: "g2" },
+        { k: "url",     l: "URL",          w: "g1" },
+        { k: "detailsEn", l: "Bullet list shown under the card (EN) — one per line", w: "g2", area: true, isList: true },
+        { k: "detailsJp", l: "Bullet list shown under the card (JP) — one per line", w: "g2", area: true, isList: true }
+      ]
+    },
+    restaurants: {
+      title: function (r) { return r.nameEn || r.nameJp || "Untitled"; },
+      blank: function (page) {
+        return { id: "r" + Date.now(), floor: "", floorJp: "", nameEn: "", nameJp: "", mealEn: "", mealJp: "",
+                 hoursEn: "", noteEn: "", hoursJp: "", noteJp: "", url: "", showIn: [page] };
+      },
+      fields: [
+        { k: "floor",   l: "Venue (EN)",      w: "g3" },
+        { k: "floorJp", l: "Venue (JP)",      w: "g3" },
+        { k: "mealEn",  l: "Meal (EN)",       w: "g3" },
+        { k: "mealJp",  l: "Meal (JP)",       w: "g3" },
+        { k: "nameEn",  l: "Name (EN)",       w: "g2" },
+        { k: "nameJp",  l: "Name (JP)",       w: "g2" },
+        { k: "hoursEn", l: "Hours (EN)",      w: "g2" },
+        { k: "hoursJp", l: "Hours (JP)",      w: "g2" },
+        { k: "noteEn",  l: "Note (EN)",       w: "g2" },
+        { k: "noteJp",  l: "Note (JP)",       w: "g2" },
+        { k: "url",     l: "Link — makes the name tappable (optional)", w: "g1" }
+      ]
+    },
+    facilities: {
+      title: function (r) { return r.nameEn || r.nameJp || "Untitled"; },
+      blank: function (page) {
+        return { id: "f" + Date.now(), floor: "", floorJp: "", nameEn: "", nameJp: "",
+                 hoursEn: "", hoursJp: "", notesEn: "", notesJp: "", showIn: [page] };
+      },
+      fields: [
+        { k: "floor",   l: "Floor (EN)", w: "g3" },
+        { k: "floorJp", l: "Floor (JP)", w: "g3" },
+        { k: "nameEn",  l: "Name (EN)",  w: "g3" },
+        { k: "nameJp",  l: "Name (JP)",  w: "g3" },
+        { k: "hoursEn", l: "Hours (EN)", w: "g2" },
+        { k: "hoursJp", l: "Hours (JP)", w: "g2" },
+        { k: "notesEn", l: "Notes (EN)", w: "g2", area: true },
+        { k: "notesJp", l: "Notes (JP)", w: "g2", area: true }
+      ]
+    },
+    services: {
+      title: function (r) { return r.labelEn || r.labelJp || "Untitled"; },
+      blank: function (page) {
+        return { id: "s" + Date.now(), labelEn: "", labelJp: "", valueEn: "", valueJp: "", showIn: [page] };
+      },
+      fields: [
+        { k: "labelEn", l: "Label (EN)", w: "g2" },
+        { k: "labelJp", l: "Label (JP)", w: "g2" },
+        { k: "valueEn", l: "Text (EN)",  w: "g2", area: true },
+        { k: "valueJp", l: "Text (JP)",  w: "g2", area: true }
+      ]
+    }
+  };
+
+  function linesToText(arr) { return (arr || []).join("\n"); }
+  function textToLines(txt) { return txt.split("\n").map(function (s) { return s.trim(); }).filter(Boolean); }
+
+  function renderList(collection, page, host) {
+    var schema = SCHEMAS[collection];
+    var all = data[collection] || (data[collection] = []);
+    host.innerHTML = "";
+
+    var visible = all.filter(function (r) {
+      if (!Array.isArray(r.showIn)) r.showIn = ["hh", "nonhh", "jtb"];
+      return r.showIn.indexOf(page) !== -1;
+    });
+
+    if (!visible.length) {
+      var empty = document.createElement("p");
+      empty.style.cssText = "font-size:.82rem;color:var(--gray);padding:.4rem 0 .8rem";
+      empty.textContent = "Nothing on this page yet.";
+      host.appendChild(empty);
+    }
+
+    visible.forEach(function (item, vIdx) {
+      var row = document.createElement("div");
+      row.className = "row";
+
+      var top = document.createElement("div");
+      top.className = "row-top";
+      var titleWrap = document.createElement("div");
+      var ttl = document.createElement("span");
+      ttl.className = "row-title";
+      ttl.textContent = (vIdx + 1) + ". " + schema.title(item);
+      var meta = document.createElement("span");
+
+      function refreshMeta() {
+        var others = item.showIn.filter(function (p) { return p !== page; });
+        if (others.length) {
+          meta.className = "row-meta shared";
+          meta.textContent = "Shared — editing this also changes " +
+            others.map(function (p) { return PAGE_LABEL[p]; }).join(" and ");
+        } else {
+          meta.className = "row-meta";
+          meta.textContent = "Only on this page";
+        }
+      }
+      refreshMeta();
+      titleWrap.appendChild(ttl);
+      titleWrap.appendChild(meta);
+
+      var tools = document.createElement("div");
+      tools.className = "row-tools";
+      [["\u2191", "Move up", function () {
+          var prev = visible[vIdx - 1]; if (!prev) return;
+          var a = all.indexOf(item), b = all.indexOf(prev);
+          all[a] = prev; all[b] = item; touched(); renderList(collection, page, host);
+        }],
+       ["\u2193", "Move down", function () {
+          var next = visible[vIdx + 1]; if (!next) return;
+          var a = all.indexOf(item), b = all.indexOf(next);
+          all[a] = next; all[b] = item; touched(); renderList(collection, page, host);
+        }],
+       ["\u2715", "Remove", function () {
+          var others = item.showIn.filter(function (p) { return p !== page; });
+          var msg = others.length
+            ? "Remove \u201C" + schema.title(item) + "\u201D from the " + PAGE_LABEL[page] +
+              " page? It stays on " + others.map(function (p) { return PAGE_LABEL[p]; }).join(" and ") + "."
+            : "Delete \u201C" + schema.title(item) + "\u201D completely?";
+          if (!confirm(msg)) return;
+          if (others.length) item.showIn = others;
+          else all.splice(all.indexOf(item), 1);
+          touched(); renderList(collection, page, host);
+        }]
+      ].forEach(function (t) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "icon-btn" + (t[0] === "\u2715" ? " del" : "");
+        b.textContent = t[0]; b.title = t[1];
+        b.addEventListener("click", t[2]);
+        tools.appendChild(b);
+      });
+
+      top.appendChild(titleWrap); top.appendChild(tools);
+      row.appendChild(top);
+
+      var groups = {};
+      schema.fields.forEach(function (f) { (groups[f.w] = groups[f.w] || []).push(f); });
+      Object.keys(groups).forEach(function (w) {
+        var g = document.createElement("div");
+        g.className = "grid " + w;
+        g.style.marginBottom = ".65rem";
+        groups[w].forEach(function (f) {
+          var wrap = document.createElement("div");
+          wrap.className = "f";
+          var lab = document.createElement("label"); lab.textContent = f.l;
+          var inp = document.createElement(f.area ? "textarea" : "input");
+          if (f.area) inp.style.minHeight = "60px";
+          var rawVal = item[f.k];
+          inp.value = f.isList ? linesToText(rawVal) : (rawVal == null ? "" : rawVal);
+          inp.addEventListener("input", function () {
+            item[f.k] = f.isList ? textToLines(inp.value) : inp.value;
+            touched();
+            ttl.textContent = (vIdx + 1) + ". " + schema.title(item);
+          });
+          wrap.appendChild(lab); wrap.appendChild(inp);
+          g.appendChild(wrap);
+        });
+        row.appendChild(g);
+      });
+
+      var si = document.createElement("div");
+      si.className = "showin";
+      var lbl = document.createElement("span");
+      lbl.className = "lbl"; lbl.textContent = "Show on:";
+      si.appendChild(lbl);
+      PAGES.forEach(function (p) {
+        var l = document.createElement("label"); l.className = "chk";
+        var c = document.createElement("input"); c.type = "checkbox";
+        c.checked = item.showIn.indexOf(p.key) !== -1;
+        if (p.key === page) { c.disabled = true; l.title = "Use the ✕ button to remove it from this page"; }
+        c.addEventListener("change", function () {
+          var i = item.showIn.indexOf(p.key);
+          if (c.checked && i === -1) item.showIn.push(p.key);
+          if (!c.checked && i !== -1) item.showIn.splice(i, 1);
+          refreshMeta(); touched();
+        });
+        l.appendChild(c); l.appendChild(document.createTextNode(p.label));
+        si.appendChild(l);
+      });
+      row.appendChild(si);
+
+      host.appendChild(row);
+    });
+
+    var add = document.createElement("button");
+    add.type = "button"; add.className = "add-row";
+    add.textContent = "+ Add to the " + PAGE_LABEL[page] + " page";
+    add.addEventListener("click", function () {
+      all.push(schema.blank(page));
+      touched();
+      renderList(collection, page, host);
+      var rows = host.querySelectorAll(".row");
+      if (rows.length) rows[rows.length - 1].scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+    host.appendChild(add);
+  }
+
+  /* ── simple string-list editor (add/remove single lines) ──── */
+  function renderStringList(host, arr, onChange) {
+    host.innerHTML = "";
+    arr.forEach(function (txt, i) {
+      var li = document.createElement("li");
+      var inp = document.createElement("input");
+      inp.value = txt;
+      inp.addEventListener("input", function () { arr[i] = inp.value; onChange(); });
+      var del = document.createElement("button");
+      del.type = "button"; del.className = "icon-btn del"; del.textContent = "\u2715";
+      del.addEventListener("click", function () { arr.splice(i, 1); onChange(); renderStringList(host, arr, onChange); });
+      li.appendChild(inp); li.appendChild(del);
+      host.appendChild(li);
+    });
+  }
+
+  /* ── card builders ────────────────────────────── */
+  function card(title, hint, bodyHTML) {
+    return '<div class="card"><div class="card-head"><h2>' + title + '</h2>' +
+      (hint ? '<span class="hint">' + hint + '</span>' : '') + '</div>' +
+      '<div class="card-body">' + bodyHTML + '</div></div>';
+  }
+
+  function headerCardHTML(page) {
+    if (page === "jtb") {
+      return card("Header", "", '<div class="f"><label>Badge <span class="tag">JP</span></label>' +
+        '<input data-bind="pages.jtb.badgeJp"></div>' +
+        '<div class="f" style="margin-top:.9rem"><label>Intro <span class="tag">JP</span></label>' +
+        '<textarea data-bind="pages.jtb.introJp"></textarea></div>');
+    }
+    return card("Header", "", '<div class="grid g2">' +
+      '<div class="f"><label>Badge <span class="tag">EN</span></label><input data-bind="pages.' + page + '.badgeEn"></div>' +
+      '<div class="f"><label>Badge <span class="tag">JP</span></label><input data-bind="pages.' + page + '.badgeJp"></div></div>' +
+      '<div class="grid" style="margin-top:.9rem">' +
+      '<div class="f"><label>Intro <span class="tag">EN</span></label><textarea data-bind="pages.' + page + '.introEn"></textarea></div>' +
+      '<div class="f"><label>Intro <span class="tag">JP</span></label><textarea data-bind="pages.' + page + '.introJp"></textarea></div></div>');
+  }
+
+  function taxCardHTML() {
+    return card("Accommodation tax", "Shared across all three pages", '<div class="grid">' +
+      '<div class="f"><label>Niseko tax notice (EN)</label><textarea data-bind="tax.en"></textarea></div>' +
+      '<div class="f"><label>Niseko tax notice (JP)</label><textarea data-bind="tax.jp"></textarea></div>' +
+      '</div><div class="grid" style="margin-top:.9rem">' +
+      '<div class="f"><label>Hokkaido tax notice (EN)</label><textarea data-bind="tax.en2"></textarea></div>' +
+      '<div class="f"><label>Hokkaido tax notice (JP)</label><textarea data-bind="tax.jp2"></textarea></div>' +
+      '</div><div class="grid g2" style="margin-top:.9rem">' +
+      '<div class="f"><label>Link text (EN)</label><input data-bind="tax.linkEn"></div>' +
+      '<div class="f"><label>Link text (JP)</label><input data-bind="tax.linkJp"></div>' +
+      '<div class="f"><label>Link URL (EN)</label><input data-bind="tax.urlEn"></div>' +
+      '<div class="f"><label>Link URL (JP)</label><input data-bind="tax.urlJp"></div></div>');
+  }
+
+  function jtbLoungeCardHTML() {
+    return card("JTB Lounge block", "Shown under the dining table", '<div class="grid g3">' +
+      '<div class="f"><label>Lounge name</label><input data-bind="jtb.loungeTitle"></div>' +
+      '<div class="f"><label>Location</label><input data-bind="jtb.loungeLocation"></div>' +
+      '<div class="f"><label>Hours</label><input data-bind="jtb.loungeHours"></div></div>' +
+      '<div class="f" style="margin-top:.9rem"><label>Conditions (JP)</label>' +
+      '<ul class="lines" id="jtbNotes"></ul>' +
+      '<button class="add-row" type="button" id="addJtbNote" style="margin-top:.45rem">+ Add a line</button></div>');
+  }
+
+  function restaurantSafetyCardHTML() {
+    return card("Dining safety notice &amp; footnote", "Shared across all three pages", '<div class="grid g2">' +
+      '<div class="f"><label>Safety banner (EN)</label><input data-bind="restaurantSafety.en"></div>' +
+      '<div class="f"><label>Safety banner (JP)</label><input data-bind="restaurantSafety.jp"></div></div>' +
+      '<div class="grid" style="margin-top:.9rem">' +
+      '<div class="f"><label>Footnote (EN)</label><textarea data-bind="restaurantNote.en"></textarea></div>' +
+      '<div class="f"><label>Footnote (JP)</label><textarea data-bind="restaurantNote.jp"></textarea></div></div>');
+  }
+
+  function wifiCardHTML(page) {
+    if (page === "jtb") {
+      return card("Wi-Fi", "Only shown on this page", '<div class="f">' +
+        '<label>Text (JP)</label><textarea data-bind="wifi.jtb.valueJp"></textarea></div>');
+    }
+    return card("Wi-Fi", "Only shown on this page", '<div class="grid">' +
+      '<div class="f"><label>Text (EN)</label><textarea data-bind="wifi.' + page + '.valueEn"></textarea></div>' +
+      '<div class="f"><label>Text (JP)</label><textarea data-bind="wifi.' + page + '.valueJp"></textarea></div></div>');
+  }
+
+  function checkoutCardHTML(page) {
+    if (page === "jtb") {
+      return card("Check-out", "", '<div class="f" style="max-width:220px;margin-bottom:.9rem">' +
+        '<label>Check-out time</label><input data-bind="meta.checkoutTime"></div>' +
+        '<div class="f"><label>Text (JP)</label><textarea data-bind="pages.jtb.checkoutJp"></textarea></div>');
+    }
+    return card("Check-out", "", '<div class="f" style="max-width:220px;margin-bottom:.9rem">' +
+      '<label>Check-out time</label><input data-bind="meta.checkoutTime"></div><div class="grid">' +
+      '<div class="f"><label>Text (EN)</label><textarea data-bind="pages.' + page + '.checkoutEn"></textarea></div>' +
+      '<div class="f"><label>Text (JP)</label><textarea data-bind="pages.' + page + '.checkoutJp"></textarea></div></div>');
+  }
+
+  function windowNoticeCardHTML() {
+    return card("Window / insect notice", "Shared, shown just under check-out", '<div class="grid">' +
+      '<div class="f"><label>Text (EN)</label><textarea data-bind="windowNotice.en"></textarea></div>' +
+      '<div class="f"><label>Text (JP)</label><textarea data-bind="windowNotice.jp"></textarea></div></div>');
+  }
+
+  function premiumClubCardHTML() {
+    return card("Hilton Premium Club Japan", "Japanese only — appears whenever a guest reads the page in Japanese",
+      '<div class="f"><label>Title (JP)</label><input data-bind="premiumClub.titleJp"></div>' +
+      '<div class="f" style="margin-top:.9rem"><label>Bullets (JP)</label>' +
+      '<ul class="lines" id="premiumBullets"></ul>' +
+      '<button class="add-row" type="button" id="addPremiumBullet" style="margin-top:.45rem">+ Add a line</button></div>');
+  }
+
+  function meetingHotelCardHTML() {
+    return card("Hotel name &amp; month", "Shared across all three pages", '<div class="grid g2">' +
+      '<div class="f"><label>Hotel name (EN)</label><input data-bind="meta.hotelName"></div>' +
+      '<div class="f"><label>Hotel name (JP)</label><input data-bind="meta.hotelNameJP"></div>' +
+      '<div class="f"><label>Month (EN)</label><input data-bind="meta.month"></div>' +
+      '<div class="f"><label>Month (JP)</label><input data-bind="meta.monthJP"></div></div>');
+  }
+
+  /* ── build one page tab ───────────────────────── */
+  function buildPagePanel(page) {
+    var panel = $("#p-" + page);
+    var isJTB = page === "jtb";
+
+    panel.innerHTML =
+      '<div class="page-head"><h1>' + PAGE_LABEL[page] + ' page</h1>' +
+      '<p>This is exactly what guests see at <code>' + PAGE_URL[page] + '</code>' +
+      (isJTB ? ', in Japanese only.' : ', in English and Japanese.') +
+      ' Edit on the right, watch it update on the left. ' +
+      '<a href="' + PAGE_URL[page] + '" target="_blank" rel="noopener">Open the live page ↗</a></p></div>' +
+
+      '<div class="split">' +
+        '<div class="preview-col"><div class="preview-shell">' +
+          '<div class="preview-toolbar"><span class="dots"><span></span><span></span><span></span></span>' +
+          '<span>' + PAGE_URL[page] + '</span><span></span></div>' +
+          '<div class="preview-frame" id="preview-' + page + '"></div>' +
+        '</div><p class="preview-hint">Live preview — updates as you type. Use its language buttons to check both versions.</p></div>' +
+
+        '<div class="edit-col">' +
+          meetingHotelCardHTML() +
+          headerCardHTML(page) +
+          taxCardHTML() +
+          (isJTB ? jtbLoungeCardHTML() : '') +
+          restaurantSafetyCardHTML() +
+          card("Restaurants &amp; room service", "Listed in page order", '<div id="list-restaurants-' + page + '"></div>') +
+          card("Facilities", "", '<div id="list-facilities-' + page + '"></div>') +
+          wifiCardHTML(page) +
+          card("Other services", "", '<div id="list-services-' + page + '"></div>') +
+          card("Useful links", "The QR codes from the printed letter", '<div id="list-links-' + page + '"></div>') +
+          checkoutCardHTML(page) +
+          windowNoticeCardHTML() +
+          premiumClubCardHTML() +
+        '</div>' +
+      '</div>';
+
+    bindWithin(panel);
+    if (isJTB) {
+      renderStringList($("#jtbNotes"), data.jtb.loungeNotes, touched);
+      $("#addJtbNote").addEventListener("click", function () {
+        data.jtb.loungeNotes.push(""); touched();
+        renderStringList($("#jtbNotes"), data.jtb.loungeNotes, touched);
+      });
+    }
+    renderStringList($("#premiumBullets", panel), data.premiumClub.bulletsJp, touched);
+    $("#addPremiumBullet", panel).addEventListener("click", function () {
+      data.premiumClub.bulletsJp.push(""); touched();
+      renderStringList($("#premiumBullets", panel), data.premiumClub.bulletsJp, touched);
+    });
+
+    renderList("links",       page, $("#list-links-"       + page));
+    renderList("restaurants", page, $("#list-restaurants-" + page));
+    renderList("facilities",  page, $("#list-facilities-"  + page));
+    renderList("services",    page, $("#list-services-"    + page));
+
+    renderPreview(page);
+  }
+
+  /* ── tabs ─────────────────────────────────────── */
+  $$(".tab").forEach(function (t) {
+    t.addEventListener("click", function () {
+      var name = t.dataset.tab;
+      $$(".tab").forEach(function (x) { x.setAttribute("aria-selected", String(x === t)); });
+      $$(".panel").forEach(function (p) { p.hidden = p.id !== "p-" + name; });
+      if (["hh", "nonhh", "jtb"].indexOf(name) !== -1 && !built[name]) { buildPagePanel(name); built[name] = true; }
+      if (name === "settings") renderSyncBox();
+      window.scrollTo({ top: 0 });
+    });
+  });
+
+  /* ── settings ─────────────────────────────────── */
+  function renderSyncBox() {
+    var box = $("#syncStatusBox");
+    if (!box) return;
+    if (HotelSync.isOnline()) {
+      box.innerHTML = '<div class="note note-ok"><strong>Connected.</strong> ' +
+        'Everything you change here is saved on the server and reaches the three landing pages ' +
+        'within about 15 seconds — including phones that already have a page open.</div>';
+    } else {
+      box.innerHTML = '<div class="note note-warn"><strong>No connection to the server.</strong> ' +
+        'Your edits are being kept in this browser so nothing is lost, but they are not reaching guests yet. ' +
+        'They will be sent as soon as the connection is back — press Save once it is.</div>';
+    }
+  }
+
+  $("#btnExport").addEventListener("click", function () {
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "hnv-content-" + new Date().toISOString().slice(0, 10) + ".json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast("Backup downloaded", "ok");
+  });
+
+  $("#fileIn").addEventListener("change", function (e) {
+    var file = e.target.files[0]; if (!file) return;
+    var fr = new FileReader();
+    fr.onload = function () {
+      try {
+        data = HotelSync.merge(DEFAULT_CONTENT, JSON.parse(fr.result));
+        rebuildAll(); touched();
+        toast("Backup loaded", "ok");
+      } catch (err) { toast("That file is not valid JSON", "err"); }
+    };
+    fr.readAsText(file); e.target.value = "";
+  });
+
+  function doRevert() {
+    if (!confirm("Discard all edits and go back to the original August 2026 content?")) return;
+    data = HotelSync.reset();
+    rebuildAll(); touched();
+    toast("Original content restored");
+  }
+  $("#btnRevert").addEventListener("click", doRevert);
+  $("#btnRevert2").addEventListener("click", doRevert);
+
+  function rebuildAll() {
+    refreshBound();
+    Object.keys(built).forEach(function (p) { buildPagePanel(p); });
+  }
+
+  /* ── boot ─────────────────────────────────────── */
+  HotelSync.load().then(function (res) {
+    data = res.data;
+    buildPagePanel("hh"); built.hh = true;
+    if (res.error)                    { setSync("err", "Offline — using local copy"); toast(res.error, "err"); }
+    else if (res.source === "server")   setSync("live", "Live — guests see this");
+    else                                setSync("live", "Live — nothing saved yet");
+  });
+})();
+</script>
+</body>
+</html>
