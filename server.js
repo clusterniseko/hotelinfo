@@ -131,53 +131,9 @@ function readBody(req, cb) {
   });
 }
 
-/* ── login page (self-contained, no external assets) ───────── */
-function loginPage(errorMsg) {
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sign in — Hilton Niseko Village</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Inter:wght@400;500;600&display=swap');
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#16283F;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem}
-.card{background:#fff;border-radius:12px;padding:2.25rem 2rem;max-width:360px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:1.5rem;color:#16283F;text-align:center;margin-bottom:.15rem}
-p.sub{text-align:center;color:#6B7280;font-size:.8rem;margin-bottom:1.5rem}
-label{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:#6B7280;font-weight:600;margin-bottom:.3rem}
-input{width:100%;border:1px solid #E2E5EA;border-radius:6px;padding:.6rem .75rem;font-size:.9rem;margin-bottom:1rem;font-family:inherit}
-input:focus{outline:none;border-color:#B08D3C}
-button{width:100%;background:#B08D3C;color:#fff;border:none;border-radius:6px;padding:.7rem;font-size:.9rem;font-weight:600;cursor:pointer;font-family:inherit}
-button:hover{background:#D6B767}
-.err{background:#FDF3F3;border:1px solid #E8C4C4;color:#B02A2A;font-size:.8rem;padding:.6rem .8rem;border-radius:6px;margin-bottom:1rem}
-</style>
-</head>
-<body>
-  <form class="card" method="POST" action="/login">
-    <h1>Content Manager</h1>
-    <p class="sub">Hilton Niseko Village</p>
-    ${errorMsg ? `<div class="err">${errorMsg}</div>` : ""}
-    <label for="u">Username</label>
-    <input id="u" name="username" autocomplete="username" autofocus>
-    <label for="p">Password</label>
-    <input id="p" name="password" type="password" autocomplete="current-password">
-    <button type="submit">Sign in</button>
-  </form>
-</body>
-</html>`;
-}
-
 function sendHTML(res, code, html) {
   res.writeHead(code, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
   res.end(html);
-}
-
-function parseFormBody(bodyStr) {
-  const out = {};
-  new URLSearchParams(bodyStr).forEach((v, k) => { out[k] = v; });
-  return out;
 }
 
 /* ── request handling ────────────────────────── */
@@ -186,44 +142,43 @@ const server = http.createServer((req, res) => {
   try { pathname = decodeURIComponent(new URL(req.url, "http://x").pathname); }
   catch (e) { res.writeHead(400); return res.end("Bad request"); }
 
-  /* ---- login ---- */
-  if (pathname === "/login") {
-    if (req.method === "GET") {
-      if (isAuthed(req)) { res.writeHead(302, { Location: "/admin" }); return res.end(); }
-      return sendHTML(res, 200, loginPage());
-    }
-    if (req.method === "POST") {
-      let raw = "";
-      req.on("data", c => { raw += c; });
-      req.on("end", () => {
-        const { username, password } = parseFormBody(raw);
-        const ok = username && password &&
-          timingSafeEqual(username, ADMIN_USER) && timingSafeEqual(password, ADMIN_PASS);
-        if (!ok) return sendHTML(res, 401, loginPage("Incorrect username or password."));
-        const token = newSession();
-        res.writeHead(302, {
-          Location: "/admin",
-          "Set-Cookie": `${SESSION_COOKIE}=${token}; HttpOnly; Path=/; Max-Age=${SESSION_MAX_AGE / 1000}; SameSite=Lax`
-        });
-        res.end();
+  /* ---- login (JSON — the form lives inside admin.html itself) ---- */
+  if (pathname === "/api/login" && req.method === "POST") {
+    readBody(req, (err, body) => {
+      if (err) return json(res, 400, { error: "Malformed request." });
+      const { username, password } = body || {};
+      const ok = username && password &&
+        timingSafeEqual(username, ADMIN_USER) && timingSafeEqual(password, ADMIN_PASS);
+      if (!ok) return json(res, 401, { error: "Incorrect username or password." });
+      const token = newSession();
+      res.writeHead(200, {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "no-store",
+        "Set-Cookie": `${SESSION_COOKIE}=${token}; HttpOnly; Path=/; Max-Age=${SESSION_MAX_AGE / 1000}; SameSite=Lax`
       });
-      return;
-    }
+      res.end(JSON.stringify({ ok: true }));
+    });
+    return;
   }
 
-  if (pathname === "/logout" && req.method === "POST") {
+  if (pathname === "/api/logout" && req.method === "POST") {
     const cookies = parseCookies(req);
     if (cookies[SESSION_COOKIE]) sessions.delete(cookies[SESSION_COOKIE]);
-    res.writeHead(302, {
-      Location: "/login",
+    res.writeHead(200, {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store",
       "Set-Cookie": `${SESSION_COOKIE}=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax`
     });
-    return res.end();
+    return res.end(JSON.stringify({ ok: true }));
   }
 
-  /* ---- admin page (protected) ---- */
+  /* ---- admin page ----
+     Always serve the file itself. admin.html shows its own login
+     screen and only builds the dashboard after /api/login succeeds,
+     so there is nothing useful to gate here — the real protection is
+     on the PUT /api/content route below, which still requires a
+     valid session no matter how admin.html was opened. */
   if (pathname === "/admin" || pathname === "/admin.html") {
-    if (!isAuthed(req)) { res.writeHead(302, { Location: "/login" }); return res.end(); }
     return fs.readFile(path.join(__dirname, "admin.html"), (err, data) => {
       if (err) return sendHTML(res, 500, "Could not load admin.html");
       sendHTML(res, 200, data.toString("utf8"));

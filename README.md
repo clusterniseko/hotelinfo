@@ -31,8 +31,11 @@ Si se te olvida, el servidor te avisa en los logs al arrancar.
 
 ### Usuario y contraseña
 
-El panel pide usuario y contraseña reales (pantalla propia, no el aviso del
-navegador). Configúralos con las variables:
+El propio `admin.html` muestra primero una pantalla de usuario y contraseña
+(no el aviso del navegador, ni una página aparte) y solo construye el panel
+después de un login correcto — sea que entres por `/admin` en el servidor o
+que abras el archivo directamente. Configura las credenciales con las
+variables:
 
 - `ADMIN_USER` — usuario (por defecto `admin`)
 - `ADMIN_PASSWORD` — contraseña (por defecto `niseko2026` — cámbiala)
@@ -118,5 +121,8 @@ desactiva *Autosave* y usa **Save** o `Ctrl`/`Cmd`+`S`.
 node server.js
 ```
 
-Y abre `http://localhost:3000/login` (usuario `admin`, contraseña `niseko2026`
-salvo que hayas puesto las variables de entorno).
+Y abre `http://localhost:3000/admin` (usuario `admin`, contraseña
+`niseko2026` salvo que hayas puesto las variables de entorno). Verás la
+pantalla de login antes que nada, tanto si entras así como si abres
+`admin.html` directamente con doble clic (en ese caso, al no haber servidor
+detrás, el login se quedará esperando — es el comportamiento esperado).
