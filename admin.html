@@ -779,7 +779,7 @@ var DEFAULT_CONTENT = {
     { id: "r10", floor: "Room Service", floorJp: "ルームサービス",
       nameEn: "Room Service", nameJp: "ルームサービス",
       mealEn: "", mealJp: "",
-      hoursEn: "Please place your order using this link.", noteEn: "L.O. 10 PM",
+      hoursEn: "Please place your order using the link.", noteEn: "L.O. 10 PM",
       hoursJp: "リンクよりご注文ください。", noteJp: "ラストオーダー 10PM",
       url: "https://hiltonnisekovillage.wi-q.com/",
       showIn: ["hh", "nonhh", "jtb"] }
@@ -871,6 +871,8 @@ var DEFAULT_CONTENT = {
       labelEn: "NV Shuttle Bus", labelJp: "シャトルバス",
       valueEn: "Please show your room key to the driver when boarding the shuttle.",
       valueJp: "ホテル、ヒラフ、俱知安間の無料シャトルバスがございます。コンシェルジュデスクにて時刻表を配布しております。\n*ルームキーを乗車の際にドライバーさんにご提示ください。",
+      linkUrl: "https://nisekovillage.hiltonjapan.co.jp/pdf/access/hotel-shuttle-bus-2026-0424-1130.pdf",
+      linkLabelEn: "NV Shuttle Bus Schedule", linkLabelJp: "NV Shuttle Bus Schedule",
       showIn: ["hh", "nonhh", "jtb"] }
   ],
 
@@ -1380,9 +1382,13 @@ var HotelRender = (function () {
     var rows = filterFor(data.services, page).filter(serviceHasContent);
     if (!rows.length) return "";
     var body = rows.map(function (s) {
+      var linkLabel = j ? s.linkLabelJp : s.linkLabelEn;
       return '<div class="svc-row">' +
         '<dt class="' + (j ? "jp" : "") + '">' + esc(j ? s.labelJp : s.labelEn) + '</dt>' +
-        '<dd class="' + (j ? "jp" : "") + '">' + escML(j ? s.valueJp : s.valueEn) + '</dd>' +
+        '<dd class="' + (j ? "jp" : "") + '">' + escML(j ? s.valueJp : s.valueEn) +
+        (s.linkUrl ? '<br>' + '<a class="notice-link" href="' + esc(s.linkUrl) + '" target="_blank" rel="noopener">' +
+                     esc(linkLabel || s.linkUrl) + ' <span aria-hidden="true">↗</span></a>' : '') +
+        '</dd>' +
       '</div>';
     }).join("");
     return '<section class="section">' +
@@ -1704,13 +1710,17 @@ window.__bootAdminApp = function () {
     services: {
       title: function (r) { return r.labelEn || r.labelJp || "Untitled"; },
       blank: function (page) {
-        return { id: "s" + Date.now(), labelEn: "", labelJp: "", valueEn: "", valueJp: "", showIn: [page] };
+        return { id: "s" + Date.now(), labelEn: "", labelJp: "", valueEn: "", valueJp: "",
+                 linkUrl: "", linkLabelEn: "", linkLabelJp: "", showIn: [page] };
       },
       fields: [
         { k: "labelEn", l: "Label (EN)", w: "g2", lang: "en" },
         { k: "labelJp", l: "Label (JP)", w: "g2", lang: "jp" },
         { k: "valueEn", l: "Text (EN)",  w: "g2", area: true, lang: "en" },
-        { k: "valueJp", l: "Text (JP)",  w: "g2", area: true, lang: "jp" }
+        { k: "valueJp", l: "Text (JP)",  w: "g2", area: true, lang: "jp" },
+        { k: "linkUrl",     l: "Link URL (optional)", w: "g1" },
+        { k: "linkLabelEn", l: "Link Text (EN)",       w: "g2", lang: "en" },
+        { k: "linkLabelJp", l: "Link Text (JP)",       w: "g2", lang: "jp" }
       ]
     }
   };
