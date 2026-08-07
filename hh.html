@@ -808,14 +808,16 @@ var HotelSync = (function () {
     base.forEach(function (item, i) { if (item && item.id != null) { baseIndex[item.id] = i; baseById[item.id] = item; } });
     saved.forEach(function (item) { if (item && item.id != null) savedById[item.id] = item; });
 
-    /* Rows that exist in both keep whatever relative order the saved
-       copy has them in — if the admin used the ↑ / ↓ buttons, that
-       ordering survives. Rows the admin added by hand (no match in
-       defaults.js) go to the end, also in saved order. */
-    var sharedIds = [], customOnlyIds = [];
+    /* Start the order from the saved copy's own order — this covers
+       both rows shared with defaults.js AND rows the admin added by
+       hand (no match in defaults.js). Previously those hand-added
+       rows were tracked separately and always appended at the very
+       end, which meant they could never be reordered from the admin
+       — this keeps whatever position the admin gave them. */
+    var order = [];
     saved.forEach(function (item) {
       if (!item || item.id == null) return;
-      (baseById[item.id] ? sharedIds : customOnlyIds).push(item.id);
+      order.push(item.id);
     });
 
     /* Rows only in defaults.js are new — shipped after this content
@@ -829,7 +831,6 @@ var HotelSync = (function () {
       })
       .map(function (item) { return item.id; });
 
-    var order = sharedIds.slice();
     newOnlyIds.forEach(function (id) {
       var bi = baseIndex[id], insertAt = -1, i, sib, pos;
       for (i = bi - 1; i >= 0 && insertAt === -1; i--) {
@@ -846,7 +847,6 @@ var HotelSync = (function () {
       }
       order.splice(insertAt === -1 ? order.length : insertAt, 0, id);
     });
-    order = order.concat(customOnlyIds);
 
     return order.map(function (id) {
       if (baseById[id] && savedById[id]) {
